@@ -1,4 +1,4 @@
-// Solution: hse - sem-2022-09-27 - Box.cs
+// Solution: hse - sem-2022-09-27 - BoxValue.cs
 // Created at 2022-09-27 18:33
 // Author: Тот Андраш Чабович
 // Group: БПИ229
