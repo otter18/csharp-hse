@@ -7,33 +7,24 @@ namespace sem_2022_09_27;
 
 public class Courier : Person
 {
-    private List<Box> _parcels = new List<Box>();
-    public int AmountOfParcels { get; private set; } = 0;
+    private readonly List<Box> _parcels = new List<Box>();
+    public int AmountOfParcels => _parcels.Count;
 
-    private int _salary = -1;
     private int _yearsOfWorkExperience = -1;
     private int _boxesDelivered = 0;
 
-    public int Salary
-    {
-        get
-            => _salary;
-        set
-            => _salary = value;
-    }
+    public int Salary { get; set; } = -1;
 
     public void GetNewParcel(Box parcel)
     {
         _parcels.Add(parcel);
-        AmountOfParcels++;
     }
 
     public void BoxDelivered()
     {
-        AmountOfParcels--;
         _boxesDelivered++;
 
-        Random rnd = new Random();
+        var rnd = new Random();
         if (AmountOfParcels == 0)
         {
             throw new ArgumentException("No one have shown up");
@@ -42,12 +33,17 @@ public class Courier : Person
         _parcels.RemoveAt(rnd.Next() % AmountOfParcels);
     }
 
-    public Courier(string name, int age, GenderType gender,
-        int salary, int yearsOfWorkExpirience = 0, int boxesDelivered = 0)
+    public Courier(
+        string name,
+        int age,
+        GenderType gender,
+        int salary,
+        int yearsOfWorkExperience = 0,
+        int boxesDelivered = 0)
         : base(name, age, gender)
     {
-        this._yearsOfWorkExperience = yearsOfWorkExpirience;
-        this._salary = salary;
+        this._yearsOfWorkExperience = yearsOfWorkExperience;
+        this.Salary = salary;
         this._boxesDelivered = boxesDelivered;
     }
 }

@@ -21,11 +21,11 @@ public class Box
     /// </summary>
     public BoxValue Value { get; private init; }
 
-    public Box(string adress, BoxValue value)
+    public Box(string address, BoxValue value)
     {
         Id = _firstFreeIndex++;
 
-        Adress = adress ?? throw new ArgumentNullException();
+        Adress = address ?? throw new ArgumentNullException();
         Value = value ?? throw new ArgumentException();
     }
 

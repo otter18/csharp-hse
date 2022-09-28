@@ -11,40 +11,43 @@ public class Manager : Person
     public static int AllOrdersCount { get; private set; } = 0;
 
     // Список всех курьеров, с которыми может работать
-    private List<Courier> _listOfCouriers { get; } = new List<Courier>();
+    private List<Courier> ListOfCouriers { get; } = new List<Courier>();
 
-    public int CurrentCouriersCount => _listOfCouriers.Count;
+    public int CurrentCouriersCount => ListOfCouriers.Count;
 
 
     public void AddCourier(Courier courier)
     {
-        _listOfCouriers.Add(courier);
+        ListOfCouriers.Add(courier);
     }
 
     public void AddRangeCourier(List<Courier> couriers)
     {
-        _listOfCouriers.AddRange(couriers);
+        ListOfCouriers.AddRange(couriers);
     }
 
     public bool RemoveCourier(Courier courier)
     {
-        return _listOfCouriers.Remove(courier);
+        return ListOfCouriers.Remove(courier);
     }
 
     public void ProcessOrder(Box box)
     {
         var random = new Random();
-        int courierId = random.Next(_listOfCouriers.Count);
-        if (_listOfCouriers.Count == 0)
+        int courierId = random.Next(ListOfCouriers.Count);
+        if (ListOfCouriers.Count == 0)
         {
             throw new ArgumentException("No one has shown up");
         }
 
-        _listOfCouriers[courierId].GetNewParcel(box); // функция Матвея по доставке коробке
+        ListOfCouriers[courierId].GetNewParcel(box); // функция Матвея по доставке коробке
         ++AllOrdersCount;
     }
 
-    public Manager(string name = "Unknown", int age = 20, GenderType gender = GenderType.Unknown)
+    public Manager(
+        string name = "Unknown",
+        int age = 20,
+        GenderType gender = GenderType.Unknown)
         : base(name, age, gender)
     {
     }

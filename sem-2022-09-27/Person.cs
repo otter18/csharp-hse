@@ -5,7 +5,6 @@
 
 namespace sem_2022_09_27;
 
-using System.Text.Json;
 
 public class Person
 {

@@ -20,10 +20,8 @@ var box = new Box("HSE Moscow", new Table("literally table", -1.1));
 Console.WriteLine(box.Beautify());
 
 Console.WriteLine("\n\n---------- ProcessOrder ----------");
-Console.WriteLine(
-    $"Before: courier.AmmountOfParcels - {courier.AmountOfParcels}, Manager.AllOrdersCount - {Manager.AllOrdersCount}");
+Console.WriteLine($"Before: courier.AmountOfParcels - {courier.AmountOfParcels}, Manager.AllOrdersCount - {Manager.AllOrdersCount}");
 manager.ProcessOrder(box);
-Console.WriteLine(
-    $"After: courier.AmmountOfParcels - {courier.AmountOfParcels}, Manager.AllOrdersCount - {Manager.AllOrdersCount}");
+Console.WriteLine($"After: courier.AmountOfParcels - {courier.AmountOfParcels}, Manager.AllOrdersCount - {Manager.AllOrdersCount}");
 
 Console.Out.Close();
