@@ -25,16 +25,29 @@ public class DataFrameColumn
         return HashCode.Combine(_data, Name);
     }
 
-    public string Name { get; set; }
+    // Column name
+    public string Name { get; init; }
+    // Column data (should be renamed, but we haven't chosen it's access modifier)
     public readonly List<object> _data;
+    // the length of _data
     public int Len => _data.Count;
     
+    /// <summary>
+    /// Provides access to _data
+    /// </summary>
+    /// <param name="index"></param>
     public object this[int index]
     {
         get => _data[index];
         set => _data[index] = value;
     }
     
+    /// <summary>
+    /// Returns a mask, showing all the elements equal to b
+    /// </summary>
+    /// <param name="a">Колонка</param>
+    /// <param name="b">число для сравнения</param>
+    /// <returns></returns>
     public static DataFrameMask operator ==(DataFrameColumn a, object b)
     {
         var resMask = new DataFrameMask(a.Len);
@@ -46,11 +59,23 @@ public class DataFrameColumn
         return resMask;
     }
 
+    /// <summary>
+    /// Returns a mask, showing all the elements not equal to b
+    /// </summary>
+    /// <param name="a">Колонка</param>
+    /// <param name="b">число для сравнения</param>
+    /// <returns></returns>
     public static DataFrameMask operator !=(DataFrameColumn a, object b)
     {
         return !(a == b);
     }
 
+    /// <summary>
+    /// Returns a mask, showing all the elements more than b
+    /// </summary>
+    /// <param name="a">Колонка</param>
+    /// <param name="b">число для сравнения</param>
+    /// <returns></returns>
     public static DataFrameMask operator >(DataFrameColumn a, object b)
     {
         var resMask = new DataFrameMask(a.Len);
@@ -64,21 +89,40 @@ public class DataFrameColumn
         return resMask;
     }
 
+    /// <summary>
+    /// Returns a mask, showing all the elements less than b
+    /// </summary>
+    /// <param name="a">Колонка</param>
+    /// <param name="b">число для сравнения</param>
+    /// <returns></returns>
     public static DataFrameMask operator <(DataFrameColumn a, object b)
     {
         return (a != b) & !(a > b); // а это правда вообще?
     }
 
+    /// <summary>
+    /// Returns a mask, showing all the elements more than or equal to b
+    /// </summary>
+    /// <param name="a">Колонка</param>
+    /// <param name="b">число для сравнения</param>
+    /// <returns></returns>
     public static DataFrameMask operator >=(DataFrameColumn a, object b)
     {
         return (a == b) | (a > b);
     }
 
+    /// <summary>
+    /// Returns a mask, showing all the elements less than or equal to b
+    /// </summary>
+    /// <param name="a">Колонка</param>
+    /// <param name="b">число для сравнения</param>
+    /// <returns></returns>
     public static DataFrameMask operator <=(DataFrameColumn a, object b)
     {
         return (a == b) | (a < b);
     }
 
+    
     public DataFrameColumn(string name, List<object> data)
     {
         Name = name;
