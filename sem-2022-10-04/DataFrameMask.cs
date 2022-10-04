@@ -29,6 +29,17 @@ public class DataFrameMask
         return resMask;
     }
     
+    public static DataFrameMask operator |(DataFrameMask mask1, DataFrameMask mask2)
+    {
+        var resMask = new DataFrameMask(mask1.len);
+        for (var i = 0; i < resMask.len; i++)
+        {
+            resMask[i] = mask1[i] | mask2[i];
+        }
+
+        return resMask;
+    }
+    
     public static DataFrameMask operator !(DataFrameMask mask)
     {
         var resMask = new DataFrameMask(mask.len);
