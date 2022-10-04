@@ -28,6 +28,17 @@ public class DataFrameMask
 
         return resMask;
     }
+    
+    public static DataFrameMask operator !(DataFrameMask mask)
+    {
+        var resMask = new DataFrameMask(mask.len);
+        for (int i = 0; i < resMask.len; i++)
+        {
+            resMask[i] = !mask[i];
+        }
+
+        return resMask;
+    }
 
     public DataFrameMask(int len)
     {
