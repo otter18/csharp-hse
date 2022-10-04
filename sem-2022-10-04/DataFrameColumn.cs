@@ -2,8 +2,8 @@
 
 public class DataFrameColumn
 {
-    public string Name { get; set; };
-    private List<object> _data;
+    public string Name { get; set; }
+    public List<object> _data;
     public int Len => _data.Count;
     
     public object this[int index]
@@ -15,9 +15,9 @@ public class DataFrameColumn
     public static DataFrameMask operator ==(DataFrameColumn a, object b)
     {
         var resMask = new DataFrameMask(a.Len);
-        for (int i = 0; i < a.Len; ++i)
+        for (var i = 0; i < a.Len; ++i)
         {
-            resMask[i] = a[i] == b;
+            resMask[i] = a[i].Equals(b);
         }
 
         return resMask;
