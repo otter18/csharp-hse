@@ -17,3 +17,6 @@ Console.WriteLine(a);
 
 var b = a[a["Name"] == "Vova"];
 Console.WriteLine(b);
+
+Console.WriteLine(b["Name"].Mean());
+

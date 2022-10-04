@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace sem_2022_10_04;
 
-public class DataFrameColumn
+public partial class DataFrameColumn
 {
     protected bool Equals(DataFrameColumn other)
     {
