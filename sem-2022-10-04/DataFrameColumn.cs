@@ -1,4 +1,4 @@
-﻿// Solution: hse - sem-2022-10-04 - DataFrame.cs
+﻿// Solution: hse - sem-2022-10-04 - DataFrameColumn.cs
 // Created at 2022-10-04 19:01
 // Author: Филимонов Виктор Павлович
 // Group: БПИ229
@@ -7,8 +7,26 @@ namespace sem_2022_10_04;
 
 public class DataFrameColumn
 {
+    protected bool Equals(DataFrameColumn other)
+    {
+        return _data.Equals(other._data) && Name == other.Name;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((DataFrameColumn)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_data, Name);
+    }
+
     public string Name { get; set; }
-    public List<object> _data;
+    public readonly List<object> _data;
     public int Len => _data.Count;
     
     public object this[int index]
