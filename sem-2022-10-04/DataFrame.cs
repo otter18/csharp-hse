@@ -5,7 +5,7 @@
 
 namespace sem_2022_10_04;
 
-internal class DataFrame
+internal partial class DataFrame
 {
     private Dictionary<string, List<object>> _data;
 
