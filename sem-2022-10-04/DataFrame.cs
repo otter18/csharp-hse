@@ -5,9 +5,9 @@
 
 namespace sem_2022_10_04;
 
-internal partial class DataFrame
+public partial class DataFrame
 {
-    private Dictionary<string, DataFrameColumn> _data;
+    private readonly Dictionary<string, DataFrameColumn> _data;
 
     public DataFrame(Dictionary<string, List<object>> data)
     {
@@ -19,11 +19,44 @@ internal partial class DataFrame
     }
 
     public string[] Columns => _data.Keys.ToArray();
-    public Tuple<int, int> Shape => new Tuple<int, int>(_data.Keys.Count, _data[this.Columns[0]].Len);
+    public Tuple<int, int> Shape => new Tuple<int, int>(Columns.Length, _data[Columns[0]].Len);
 
     public override string ToString()
     {
+        var colWidth = new List<int>(Shape.Item1);
+        foreach (var key in Columns)
+        {
+            var maxWidth = key.Length;
+            foreach (var elem in _data[key].Data)
+            {
+                maxWidth = Math.Max(maxWidth, elem.ToString()!.Length);
+            }
+
+            colWidth.Add(maxWidth);
+        }
+
         var res = "";
-        return default;
+        for (int i = 0; i < Shape.Item1; i++)
+        {
+            res += Columns[i].PadRight(colWidth[i]);
+            res += "  ";
+        }
+
+        res += '\n';
+
+        for (var j = 0; j < Shape.Item2; j++)
+        {
+            for (var i = 0; i < Shape.Item1; i++)
+            {
+                res += _data[Columns[i]][j]
+                    .ToString()!
+                    .PadRight(colWidth[i]);
+                res += "  ";
+            }
+
+            res += '\n';
+        }
+
+        return res;
     }
 }

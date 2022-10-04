@@ -3,13 +3,15 @@
 // Author: Филимонов Виктор Павлович
 // Group: БПИ229
 
+using System.Text.Json;
+
 namespace sem_2022_10_04;
 
 public class DataFrameColumn
 {
     protected bool Equals(DataFrameColumn other)
     {
-        return _data.Equals(other._data) && Name == other.Name;
+        return Data.Equals(other.Data) && Name == other.Name;
     }
 
     public override bool Equals(object? obj)
@@ -22,26 +24,28 @@ public class DataFrameColumn
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(_data, Name);
+        return HashCode.Combine(Data, Name);
     }
 
     // Column name
-    public string Name { get; init; }
+    public string? Name { get; init; }
+
     // Column data (should be renamed, but we haven't chosen it's access modifier)
-    public readonly List<object> _data;
+    public readonly List<object> Data;
+
     // the length of _data
-    public int Len => _data.Count;
-    
+    public int Len => Data.Count;
+
     /// <summary>
     /// Provides access to _data
     /// </summary>
     /// <param name="index"></param>
     public object this[int index]
     {
-        get => _data[index];
-        set => _data[index] = value;
+        get => Data[index];
+        set => Data[index] = value;
     }
-    
+
     /// <summary>
     /// Returns a mask, showing all the elements equal to b
     /// </summary>
@@ -79,13 +83,14 @@ public class DataFrameColumn
     public static DataFrameMask operator >(DataFrameColumn a, object b)
     {
         var resMask = new DataFrameMask(a.Len);
-        
+
         if (!double.TryParse(b.ToString(), out var doubleB)) return resMask;
-        
+
         for (var i = 0; i < a.Len; ++i)
         {
             resMask[i] = double.Parse(a[i].ToString()!) > doubleB;
         }
+
         return resMask;
     }
 
@@ -122,10 +127,19 @@ public class DataFrameColumn
         return (a == b) | (a < b);
     }
 
-    
-    public DataFrameColumn(string name, List<object> data)
+    public DataFrameColumn(string? name, List<object> data)
     {
         Name = name;
-        _data = data;
+        Data = data;
+    }
+
+    public DataFrameColumn(List<object> data)
+    {
+        Data = data;
+    }
+
+    public override string ToString()
+    {
+        return $"{Name}: {JsonSerializer.Serialize(Data)}";
     }
 }

@@ -1,31 +1,19 @@
 ﻿using sem_2022_10_04;
 
-// var a = new DataFrame(new Dictionary<string, List<object>>
-// {
-//     {
-//         "A", new List<object> { 1, 2, 3 }
-//     },
-//     {
-//         "B", new List<object> { 4, 5, 6 }
-//     }
-// });
+var a = new DataFrame(new Dictionary<string, List<object>>
+{
+    {
+        "Name", new List<object> { "Andrash", "Vova", "Vova", "Vitya" }
+    },
+    {
+        "Num", new List<object> { 1, 179, 111, -57 }
+    },
+    {
+        "Dec", new List<object> { 0.1, -1.5, 3.33, 12.1 }
+    }
+});
 
-var mask1 = new DataFrameMask(new List<bool> { false, true, true });
-var mask2 = new DataFrameMask(new List<bool> { false, true, false });
-var mask3 = mask1 & mask2;
+Console.WriteLine(a);
 
-Console.WriteLine(mask3);
-
-/*
-A B
-1 4
-2 5
-3 6    
-
-
-a[f() => a["A"]]
-
-a[a["A"] == 10]
-a[(a["A"] == 10) & (a["B"] > 10)]
-
-*/
+var b = a[a["Name"] == "Vova"];
+Console.WriteLine(b);

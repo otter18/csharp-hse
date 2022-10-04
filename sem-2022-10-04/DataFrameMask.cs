@@ -9,8 +9,8 @@ namespace sem_2022_10_04;
 
 public class DataFrameMask
 {
-    public int len => _mask.Count;
-    public List<bool> _mask;
+    public int Len => _mask.Count;
+    private List<bool> _mask;
 
     public bool this[int index]
     {
@@ -20,30 +20,30 @@ public class DataFrameMask
 
     public static DataFrameMask operator &(DataFrameMask mask1, DataFrameMask mask2)
     {
-        var resMask = new DataFrameMask(mask1.len);
-        for (var i = 0; i < resMask.len; i++)
+        var resMask = new DataFrameMask(mask1.Len);
+        for (var i = 0; i < resMask.Len; i++)
         {
             resMask[i] = mask1[i] & mask2[i];
         }
 
         return resMask;
     }
-    
+
     public static DataFrameMask operator |(DataFrameMask mask1, DataFrameMask mask2)
     {
-        var resMask = new DataFrameMask(mask1.len);
-        for (var i = 0; i < resMask.len; i++)
+        var resMask = new DataFrameMask(mask1.Len);
+        for (var i = 0; i < resMask.Len; i++)
         {
             resMask[i] = mask1[i] | mask2[i];
         }
 
         return resMask;
     }
-    
+
     public static DataFrameMask operator !(DataFrameMask mask)
     {
-        var resMask = new DataFrameMask(mask.len);
-        for (int i = 0; i < resMask.len; i++)
+        var resMask = new DataFrameMask(mask.Len);
+        for (int i = 0; i < resMask.Len; i++)
         {
             resMask[i] = !mask[i];
         }

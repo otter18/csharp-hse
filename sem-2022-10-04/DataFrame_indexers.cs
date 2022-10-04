@@ -1,12 +1,11 @@
-namespace sem_2022_10_04;
-
 // Solution: hse - sem-2022-10-04 - DataFrameMask.cs
 // Created at 2022-10-04 19:44
 // Author: Тот Андраш Чабович
 // Group: БПИ229
 
+namespace sem_2022_10_04;
 
-internal partial class DataFrame
+public partial class DataFrame
 {
     /// <summary>
     /// Returns the representation of the column with the given name.
@@ -16,16 +15,23 @@ internal partial class DataFrame
         get
         {
             ValidateColumnName(columnName);
-            return new DataFrameColumn(columnName, _data[columnName]);
+            return new DataFrameColumn(columnName, _data[columnName].Data);
         }
         set
         {
             ValidateColumnName(columnName);
-            _data[columnName] = value._data;
+            if (Columns.Contains(columnName))
+            {
+                _data[columnName] = value;
+            }
+            else
+            {
+                _data.Add(columnName, new DataFrameColumn(columnName, value.Data));
+            }
         }
     }
-        
-    
+
+
     /// <summary>
     /// Accesses the element with the given index from the column with given name. 
     /// </summary>
@@ -43,32 +49,35 @@ internal partial class DataFrame
         }
     }
 
-    
+
     /// <summary>
     /// Returns the number of elements of the column with the given name according to the given mask.
     /// </summary>
-    public List<object> this[string columnName, DataFrameMask mask]
+    public DataFrame this[DataFrameMask mask]
     {
         get
         {
-            ValidateColumnName(columnName);
-            List<object> chosenColumn = _data[columnName];
-            
-            ValidateMask(mask, chosenColumn.Count);
+            ValidateMask(mask);
 
-            List<object> res = new List<object>();
-            for (int i = 0; i < Math.Min(chosenColumn.Count, mask.len); i++)
+            var res = new Dictionary<string, List<object>>();
+            foreach (var key in Columns)
             {
-                if (mask[i])
+                var col = new List<object>();
+                for (var i = 0; i < Shape.Item2; i++)
                 {
-                    res.Add(chosenColumn[i]);
+                    if (mask[i])
+                    {
+                        col.Add(_data[key][i]);
+                    }
                 }
+
+                res.Add(key, col);
             }
 
-            return res;
+            return new DataFrame(res);
         }
     }
-    
+
     /// <summary>
     /// Validates the name of the column.
     /// </summary>
@@ -78,19 +87,14 @@ internal partial class DataFrame
         {
             throw new ArgumentNullException(nameof(columnName));
         }
-        
-        if (_data.ContainsKey(columnName!) is false)
-        {
-            throw new ArgumentException($"No column with such name: {columnName}");
-        }
     }
 
     /// <summary>
     /// Validates the index in the for the column with given name.
     /// </summary>
-    private void ValidateIndex(string columnName, int index)
+    private void ValidateIndex(string? columnName, int index)
     {
-        if (index >= _data[columnName!].Count)
+        if (index >= _data[columnName!].Len)
         {
             throw new ArgumentException($"No element with such index in {columnName} column: {index}");
         }
@@ -99,19 +103,19 @@ internal partial class DataFrame
     /// <summary>
     /// Validates the mask.
     /// </summary>
-    private void ValidateMask(DataFrameMask? mask, int columnLength)
+    private void ValidateMask(DataFrameMask? mask)
     {
         if (mask is null)
         {
             throw new ArgumentNullException(nameof(mask));
         }
 
-        if (mask.len != columnLength)
+        if (mask.Len != Shape.Item2)
         {
-            throw new ArgumentException("The column and the given mask are not of the same size.");
+            throw new ArgumentException("The dataframe and the given mask are not of the same size.");
         }
     }
-    
+
     private void ValidateColumnNameIndex(string? columnName, int index)
     {
         ValidateColumnName(columnName);
