@@ -7,10 +7,11 @@ namespace sem_2022_10_04;
 
 internal partial class DataFrame
 {
-    private Dictionary<string, DataFrameColumn> _data = { };
+    private Dictionary<string, DataFrameColumn> _data;
 
     public DataFrame(Dictionary<string, List<object>> data)
     {
+        _data = new Dictionary<string, DataFrameColumn>(data.Count);
         foreach (var key in data.Keys)
         {
             _data.Add(key, new DataFrameColumn(key, data[key]));
