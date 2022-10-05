@@ -18,5 +18,8 @@ Console.WriteLine(a);
 var b = a[a["Name"] == "Vova"];
 Console.WriteLine(b);
 
-Console.WriteLine(b["Name"].Mean());
+Console.WriteLine(b["Dec"].Sum());
+Console.WriteLine(b["Dec"].Min());
+Console.WriteLine(b["Dec"].Max());
+Console.WriteLine(b["Dec"].Mean());
 
