@@ -1,4 +1,4 @@
-// Solution: hse - sem-2022-10-04 - DataFrameColumn_func.cs
+// Solution: hse - sem-2022-10-04 - DataFrameColumnFunc.cs
 // Created at 2022-10-04 22:51
 // Author: Рудинский Матвей Александрович 
 // Group: БПИ229
