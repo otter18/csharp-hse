@@ -1,4 +1,4 @@
-// Solution: hse - sem-2022-10-04 - DataFrameMask.cs
+// Solution: hse - sem-2022-10-04 - DataFrameIndexers.cs
 // Created at 2022-10-04 19:44
 // Author: Тот Андраш Чабович
 // Group: БПИ229
@@ -46,6 +46,24 @@ public partial class DataFrame
         {
             ValidateColumnNameIndex(columnName, index);
             _data[columnName][index] = value;
+        }
+    }
+
+    /// <summary>
+    /// Accesses the element with the given index from the column with given name. 
+    /// </summary>
+    public DataFrame this[Range a, Range b]
+    {
+        get
+        {
+            var res = new Dictionary<string, List<object>>();
+            var newColumns = Columns[a];
+            foreach (var col in newColumns)
+            {
+                res.Add(col, _data[col].Data.ToArray()[b].ToList());
+            }
+
+            return new DataFrame(res);
         }
     }
 
