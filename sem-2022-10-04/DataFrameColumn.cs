@@ -9,7 +9,7 @@ namespace sem_2022_10_04;
 
 public partial class DataFrameColumn
 {
-    protected bool Equals(DataFrameColumn other)
+    private bool Equals(DataFrameColumn other)
     {
         return Data.Equals(other.Data) && Name == other.Name;
     }

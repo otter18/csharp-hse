@@ -36,7 +36,7 @@ public partial class DataFrame
         }
 
         var res = "";
-        for (int i = 0; i < Shape.Item1; i++)
+        for (var i = 0; i < Shape.Item1; i++)
         {
             res += Columns[i].PadRight(colWidth[i]);
             res += "  ";
