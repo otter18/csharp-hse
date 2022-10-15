@@ -1,6 +1,6 @@
 // Solution: hse - sem-2022-10-12 - LsConsoleCommand.cs
 // Created at 2022-10-15 22:25
-// Author: $YOUR NAME$
+// Author: 
 // Group: БПИ229
 
 namespace sem_2022_10_12;

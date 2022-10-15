@@ -1,6 +1,6 @@
 // Solution: hse - sem-2022-10-12 - ConsoleEngine.cs
 // Created at 2022-10-15 20:01
-// Author: $YOUR NAME$
+// Author: Черных Владимир Артемович
 // Group: БПИ229
 
 

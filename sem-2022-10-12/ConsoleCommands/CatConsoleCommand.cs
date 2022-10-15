@@ -1,6 +1,6 @@
 // Solution: hse - sem-2022-10-12 - CatConsoleCommand.cs
 // Created at 2022-10-15 23:26
-// Author: $YOUR NAME$
+// Author: 
 // Group: БПИ229
 
 namespace sem_2022_10_12;
