@@ -8,8 +8,4 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-      <Compile Remove="ConsoleCommands\MkdirConsoleCommand.cs" />
-    </ItemGroup>
-
 </Project>
