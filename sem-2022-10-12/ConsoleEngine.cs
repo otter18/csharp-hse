@@ -12,6 +12,7 @@ public static class ConsoleEngine
 
     private const string AsciiArt = "  ____                  _         ____         ___  \n | __ )    __ _   ___  | |__     |___ \\       / _ \\ \n |  _ \\   / _` | / __| | '_ \\      __) |     | | | |\n | |_) | | (_| | \\__ \\ | | | |    / __/   _  | |_| |\n |____/   \\__,_| |___/ |_| |_|   |_____| (_)  \\___/ \n                                                    ";
 
+    public const string RootDir = "sandbox";
     private static DirectoryInfo _currentDir = new DirectoryInfo("sandbox");
 
     private static List<string> _history = new List<string>();
