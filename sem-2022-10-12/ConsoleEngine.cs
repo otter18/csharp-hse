@@ -28,7 +28,8 @@ public static partial class ConsoleEngine
         { "mkdir", new MkdirConsoleCommand() },
         { "touch", new TouchConsoleCommand() },
         { "cp", new CpConsoleCommand() },
-        { "rm", new RmConsoleCommand() }
+        { "rm", new RmConsoleCommand() },
+        { "tree", new TreeConsoleCommand() }
     };
 
     private static void Init()
