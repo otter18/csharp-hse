@@ -5,21 +5,28 @@
 
 namespace sem_2022_10_12.ConsoleCommands;
 
+using System.IO;
+
 /// <summary>
 /// Represents Linux-alike cd command of console.
 /// </summary>
 public class CdConsoleCommand : IConsoleCommand
 {
     /// <summary>
-    /// Reorganizing the path so it is indifferent to different operating systems.
+    /// Adds the directory separator at the beginning of the given string
     /// </summary>
-    /// <param name="path"></param>
+    private string AddSeparatorToBeginning(string path)
+    {
+        return Path.DirectorySeparatorChar + path;
+    }
+    
+    /// <summary>
+    /// Reorganizing the path so it is indifferent to multiple operating systems.
+    /// </summary>
     /// <returns>Indifferent to OS path.</returns>
     private string MakePathIndifferent(string path)
     {
-        // Path.DirectorySeparatorChar is vital! DO NOT REMOVE! 
-        return Path.DirectorySeparatorChar +
-               Path.Combine(path.Split('/', '\\'));
+        return AddSeparatorToBeginning(Path.Combine(path.Split('/', '\\')));
     }
 
     /// <summary>
@@ -36,7 +43,7 @@ public class CdConsoleCommand : IConsoleCommand
     /// before calling cd command with the description of the reason why
     /// the directory hasn't changed.
     /// </summary>
-    private static ConsoleState NoMoveDueError(
+    private ConsoleState NoMoveDueError(
         string errorDescription,
         DirectoryInfo currentDirectory)
     {
@@ -57,34 +64,39 @@ public class CdConsoleCommand : IConsoleCommand
 
         if (pathSplitted.Length < 2)
         {
-            throw new CdCommandEmptyPathException();
+            throw new CdCommnandEmptyPathException();
         }
-
+        
         return MakePathIndifferent(pathSplitted[1]);
     }
 
     /// <summary>
-    /// Returns a directory is supposed to be requested by the user.
+    /// Returns a directory supposed to be requested by the user.
     /// </summary>
     private DirectoryInfo ManagePath(string requestedPath, string currentPath)
     {
-        // If the command was cd . than return the current directory.
-        if (requestedPath == Path.DirectorySeparatorChar + ".")
+        // If the command was 'cd .' than return the current directory.
+        if (requestedPath == AddSeparatorToBeginning("."))
         {
             return new DirectoryInfo(currentPath);
         }
 
+        // If the command was 'cd /' than return to the root directory
+        if (requestedPath == AddSeparatorToBeginning(""))
+        {
+            return ConsoleEngine.RootDir;
+        }
+        
         DirectoryInfo currentDirectory = new DirectoryInfo(currentPath);
         ManagePathDots(ref requestedPath, ref currentDirectory);
 
-        string pathAfterDots = currentDirectory.FullName;
+        var pathAfterDots = currentDirectory.FullName;
         if (requestedPath != string.Empty)
         {
             if (requestedPath.StartsWith(currentPath))
             {
                 requestedPath = requestedPath[currentPath.Length..];
             }
-
             pathAfterDots += requestedPath;
         }
 
@@ -97,7 +109,7 @@ public class CdConsoleCommand : IConsoleCommand
     /// </summary>
     private void ManagePathDots(ref string path, ref DirectoryInfo currentDirectory)
     {
-        var command = Path.DirectorySeparatorChar + "..";
+        var command = AddSeparatorToBeginning("..");
         while (path.StartsWith(command))
         {
             currentDirectory = currentDirectory.Parent ?? currentDirectory;
@@ -106,9 +118,9 @@ public class CdConsoleCommand : IConsoleCommand
         }
     }
 
-    public string GetHelpMessage() => "cd {path}" +
+    public string GetHelpMessage() => "cd {path}" + 
                                       "\n The path can be absolute or relative.";
-
+    
     public ConsoleState Process(string inpCommand, DirectoryInfo currentDir)
     {
         // Getting the path the user has given.
@@ -117,16 +129,17 @@ public class CdConsoleCommand : IConsoleCommand
         {
             requestedPath = GetRequestedPath(inpCommand);
         }
-        catch (CdCommandEmptyPathException)
+        catch (CdCommnandEmptyPathException)
         {
             return NoMoveDueError("No path was given.", currentDir);
         }
-
-
+        
+        
         // The directory to work with while managing user's commands.
         DirectoryInfo directoryUnderChange = ManagePath(requestedPath, currentDir.FullName);
-
-
+        
+        
+        
         // Checking if the result directory is still in the root directory.
         if (IsInRoot(directoryUnderChange) is false)
         {
@@ -134,7 +147,7 @@ public class CdConsoleCommand : IConsoleCommand
                 $"Cannot leave the root directory: {ConsoleEngine.RootDir.FullName}",
                 currentDir);
         }
-
+        
         // Checking if the result directory exists.
         if (Directory.Exists(directoryUnderChange.FullName) is false)
         {
@@ -155,17 +168,9 @@ public class CdConsoleCommand : IConsoleCommand
 /// <summary>
 /// Occurs when user types cd command without giving any path.
 /// </summary>
-public class CdCommandEmptyPathException : ApplicationException
+public class CdCommnandEmptyPathException : ApplicationException
 {
-    public CdCommandEmptyPathException() : base("No path was given.")
-    {
-    }
-
-    public CdCommandEmptyPathException(string message) : base(message)
-    {
-    }
-
-    public CdCommandEmptyPathException(string message, Exception inner) : base(message, inner)
-    {
-    }
+    public CdCommnandEmptyPathException() : base("No path was given."){}
+    public CdCommnandEmptyPathException(string message) : base(message) {}
+    public CdCommnandEmptyPathException(string message, Exception inner) : base(message, inner){}
 }
