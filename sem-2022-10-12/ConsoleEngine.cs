@@ -56,9 +56,14 @@ public static class ConsoleEngine
         }
     }
 
+    private static string FormatDirPath(DirectoryInfo directoryInfo)
+    {
+        return directoryInfo.FullName.Replace((RootDir.Parent?.FullName ?? "") + "/", "");
+    }
+
     private static void Loop()
     {
-        Console.Write($"{_currentDir} > ");
+        Console.Write($"{FormatDirPath(_currentDir)} > ");
 
         var lineHistory = new List<char>();
         var keyPressed = Console.ReadKey(true);
