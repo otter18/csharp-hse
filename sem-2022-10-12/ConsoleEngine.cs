@@ -8,7 +8,7 @@ namespace sem_2022_10_12;
 
 using ConsoleCommands;
 
-public static class ConsoleEngine
+public static partial class ConsoleEngine
 {
     private static bool _exit;
 
@@ -42,28 +42,11 @@ public static class ConsoleEngine
         Console.ResetColor();
     }
 
-    private static string AutoCompleteCommand(string inp)
-    {
-        // TODO: autocomplete
-        throw new NotImplementedException();
-    }
-
-    private static void Erase(int cnt)
-    {
-        for (var i = 0; i < cnt; i++)
-        {
-            Console.Write("\b \b");
-        }
-    }
-
-    private static string FormatDirPath(DirectoryInfo directoryInfo)
-    {
-        return directoryInfo.FullName.Replace((RootDir.Parent?.FullName ?? "") + "/", "");
-    }
-
     private static void Loop()
     {
+        Console.ForegroundColor = ConsoleColor.Green;
         Console.Write($"{FormatDirPath(_currentDir)} > ");
+        Console.ResetColor();
 
         var lineHistory = new List<char>();
         var keyPressed = Console.ReadKey(true);
@@ -90,7 +73,7 @@ public static class ConsoleEngine
                 Console.Write(keyPressed.KeyChar);
                 lineHistory.Add(keyPressed.KeyChar);
             }
-            else if (char.IsWhiteSpace(keyPressed.KeyChar) &&
+            else if (keyPressed.Key == ConsoleKey.Spacebar &&
                      lineHistory.Count > 0 &&
                      lineHistory[^1] != keyPressed.KeyChar)
             {
@@ -160,11 +143,10 @@ public static class ConsoleEngine
 
         var inpCommandName = inpCommand.Split(" ")[0];
 
-
-        // process generic commands
-        foreach (var command in _commands.Keys.Where(command => inpCommandName == command))
+        try
         {
-            try
+            // process generic commands
+            foreach (var command in _commands.Keys.Where(command => inpCommandName == command))
             {
                 var (result, newCurrentDir) = _commands[command].Process(inpCommand, _currentDir);
                 _currentDir = newCurrentDir;
@@ -172,29 +154,40 @@ public static class ConsoleEngine
                 {
                     Console.WriteLine(result);
                 }
-            }
-            catch (Exception e)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(e);
-                Console.ResetColor();
+
+                return;
             }
 
+            // process special commands
+            switch (inpCommandName)
+            {
+                case "clear":
+                    Console.Clear();
+                    Init();
+                    return;
+                case "exit":
+                    _exit = true;
+                    return;
+                case "help":
+                    Console.WriteLine(RenderHelpMessage(inpCommand));
+                    return;
+                default:
+                    break;
+            }
+        }
+        catch (CommandErrorException e)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(e.Message);
+            Console.ResetColor();
             return;
         }
-
-        // process special commands
-        switch (inpCommandName)
+        catch (Exception e)
         {
-            case "clear":
-                Console.Clear();
-                Init();
-                return;
-            case "exit":
-                _exit = true;
-                return;
-            default:
-                break;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(e);
+            Console.ResetColor();
+            return;
         }
 
         // error if command not found

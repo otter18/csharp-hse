@@ -15,6 +15,6 @@ public class CatConsoleCommand: IConsoleCommand
 
     public string GetHelpMessage()
     {
-        throw new NotImplementedException();
+        return "botva";
     }
 }

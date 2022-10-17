@@ -14,6 +14,6 @@ public class TouchConsoleCommand : IConsoleCommand
 
     public string GetHelpMessage()
     {
-        throw new NotImplementedException();
+        return "botva";
     }
 }
