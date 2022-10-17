@@ -10,7 +10,7 @@ using ConsoleCommands;
 
 public static class ConsoleEngine
 {
-    private static bool _exit = false;
+    private static bool _exit;
 
     private const string AsciiArt = "  ____                  _         ____         ___  \n | __ )    __ _   ___  | |__     |___ \\       / _ \\ \n |  _ \\   / _` | / __| | '_ \\      __) |     | | | |\n | |_) | | (_| | \\__ \\ | | | |    / __/   _  | |_| |\n |____/   \\__,_| |___/ |_| |_|   |_____| (_)  \\___/ \n                                                    ";
 
@@ -168,7 +168,10 @@ public static class ConsoleEngine
             {
                 var (result, newCurrentDir) = _commands[command].Process(inpCommand, _currentDir);
                 _currentDir = newCurrentDir;
-                Console.Write(result);
+                if (result.Length != 0)
+                {
+                    Console.WriteLine(result);
+                }
             }
             catch (Exception e)
             {
@@ -194,6 +197,7 @@ public static class ConsoleEngine
                 break;
         }
 
+        // error if command not found
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine($"Command {inpCommandName} not found. Use help to list available commands");
         Console.ResetColor();
