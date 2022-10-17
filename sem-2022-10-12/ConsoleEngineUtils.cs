@@ -90,25 +90,10 @@ public static partial class ConsoleEngine
 
     /// <summary>
     /// Checks if the root directory of the ConsoleEngine is parent
-    /// of the given directory. 
+    /// of the given directory.
     /// </summary>
     public static bool IsInRoot(DirectoryInfo directoryToCheck)
     {
         return directoryToCheck.FullName.StartsWith(ConsoleEngine.RootDir.FullName);
-    }
-}
-
-internal class CommandErrorException : ApplicationException
-{
-    public CommandErrorException() : base("Undefined error! Try again")
-    {
-    }
-
-    public CommandErrorException(string message) : base(message)
-    {
-    }
-
-    public CommandErrorException(string message, Exception inner) : base(message, inner)
-    {
     }
 }

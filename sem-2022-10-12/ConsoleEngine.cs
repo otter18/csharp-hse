@@ -29,7 +29,8 @@ public static partial class ConsoleEngine
         { "touch", new TouchConsoleCommand() },
         { "cp", new CpConsoleCommand() },
         { "rm", new RmConsoleCommand() },
-        { "tree", new TreeConsoleCommand() }
+        { "tree", new TreeConsoleCommand() },
+        { "foxsay", new FoxsayConsoleCommand() }
     };
 
     private static void Init()
