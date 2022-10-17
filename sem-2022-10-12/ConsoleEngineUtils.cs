@@ -48,7 +48,8 @@ public static partial class ConsoleEngine
                 return _commands[args[1]].GetHelpMessage();
             // specified command not found
             case 2:
-                throw new CommandErrorException($"Given command {args[1]} doesn't exit");
+                throw new CommandErrorException($"Given command {args[1]} doesn't exit.\n" +
+                                                $"Available commands: {string.Join(", ", _commands.Keys)}");
             // syntax error
             case > 2:
                 throw new CommandErrorException($"Syntax error. Enter help or help <command>");
