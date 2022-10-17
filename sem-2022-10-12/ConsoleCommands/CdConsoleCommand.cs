@@ -3,9 +3,7 @@
 // Author: Тот Андраш
 // Group: БПИ229
 
-namespace sem_2022_10_12;
-
-using System.IO;
+namespace sem_2022_10_12.ConsoleCommands;
 
 /// <summary>
 /// Represents Linux-alike cd command of console.
@@ -38,7 +36,7 @@ public class CdConsoleCommand : IConsoleCommand
     /// before calling cd command with the description of the reason why
     /// the directory hasn't changed.
     /// </summary>
-    private ConsoleState NoMoveDueError(
+    private static ConsoleState NoMoveDueError(
         string errorDescription,
         DirectoryInfo currentDirectory)
     {
@@ -59,9 +57,9 @@ public class CdConsoleCommand : IConsoleCommand
 
         if (pathSplitted.Length < 2)
         {
-            throw new CdCommnandEmptyPathException();
+            throw new CdCommandEmptyPathException();
         }
-        
+
         return MakePathIndifferent(pathSplitted[1]);
     }
 
@@ -75,7 +73,7 @@ public class CdConsoleCommand : IConsoleCommand
         {
             return new DirectoryInfo(currentPath);
         }
-        
+
         DirectoryInfo currentDirectory = new DirectoryInfo(currentPath);
         ManagePathDots(ref requestedPath, ref currentDirectory);
 
@@ -86,6 +84,7 @@ public class CdConsoleCommand : IConsoleCommand
             {
                 requestedPath = requestedPath[currentPath.Length..];
             }
+
             pathAfterDots += requestedPath;
         }
 
@@ -107,9 +106,9 @@ public class CdConsoleCommand : IConsoleCommand
         }
     }
 
-    public string GetHelpMessage() => "cd {path}" + 
+    public string GetHelpMessage() => "cd {path}" +
                                       "\n The path can be absolute or relative.";
-    
+
     public ConsoleState Process(string inpCommand, DirectoryInfo currentDir)
     {
         // Getting the path the user has given.
@@ -118,17 +117,16 @@ public class CdConsoleCommand : IConsoleCommand
         {
             requestedPath = GetRequestedPath(inpCommand);
         }
-        catch (CdCommnandEmptyPathException)
+        catch (CdCommandEmptyPathException)
         {
             return NoMoveDueError("No path was given.", currentDir);
         }
-        
-        
+
+
         // The directory to work with while managing user's commands.
         DirectoryInfo directoryUnderChange = ManagePath(requestedPath, currentDir.FullName);
-        
-        
-        
+
+
         // Checking if the result directory is still in the root directory.
         if (IsInRoot(directoryUnderChange) is false)
         {
@@ -136,7 +134,7 @@ public class CdConsoleCommand : IConsoleCommand
                 $"Cannot leave the root directory: {ConsoleEngine.RootDir.FullName}",
                 currentDir);
         }
-        
+
         // Checking if the result directory exists.
         if (Directory.Exists(directoryUnderChange.FullName) is false)
         {
@@ -157,9 +155,17 @@ public class CdConsoleCommand : IConsoleCommand
 /// <summary>
 /// Occurs when user types cd command without giving any path.
 /// </summary>
-public class CdCommnandEmptyPathException : ApplicationException
+public class CdCommandEmptyPathException : ApplicationException
 {
-    public CdCommnandEmptyPathException() : base("No path was given."){}
-    public CdCommnandEmptyPathException(string message) : base(message) {}
-    public CdCommnandEmptyPathException(string message, Exception inner) : base(message, inner){}
+    public CdCommandEmptyPathException() : base("No path was given.")
+    {
+    }
+
+    public CdCommandEmptyPathException(string message) : base(message)
+    {
+    }
+
+    public CdCommandEmptyPathException(string message, Exception inner) : base(message, inner)
+    {
+    }
 }
