@@ -30,22 +30,6 @@ public class CdConsoleCommand : IConsoleCommand
     }
 
     /// <summary>
-    /// Returns ConsoleState object with the same directory as it was
-    /// before calling cd command with the description of the reason why
-    /// the directory hasn't changed.
-    /// </summary>
-    private ConsoleState NoMoveDueError(
-        string errorDescription,
-        DirectoryInfo currentDirectory)
-    {
-        return new ConsoleState()
-        {
-            CurrentDir = currentDirectory,
-            Result = errorDescription
-        };
-    }
-
-    /// <summary>
     /// Gets the path the user requests in a ready to use form.
     /// </summary>
     private string GetRequestedPath(string path)
@@ -120,31 +104,25 @@ public class CdConsoleCommand : IConsoleCommand
         {
             requestedPath = GetRequestedPath(inpCommand);
         }
-        catch (CdCommnandEmptyPathException)
+        catch (CdCommnandEmptyPathException e)
         {
-            return NoMoveDueError("No path was given.", currentDir);
+            throw new CommandErrorException("No path was given.", e);
         }
-        
         
         // The directory to work with while managing user's commands.
         DirectoryInfo directoryUnderChange = ManagePath(requestedPath, currentDir.FullName);
         
-        
-        
         // Checking if the result directory is still in the root directory.
         if (ConsoleEngine.IsInRoot(directoryUnderChange) is false)
         {
-            return NoMoveDueError(
-                $"Cannot leave the root directory: {ConsoleEngine.RootDir.FullName}",
-                currentDir);
+            throw new CommandErrorException(
+                $"Cannot leave the root directory: {ConsoleEngine.RootDir.FullName}");
         }
         
         // Checking if the result directory exists.
         if (Directory.Exists(directoryUnderChange.FullName) is false)
         {
-            return NoMoveDueError(
-                "The given directory does not exist",
-                currentDir);
+            throw new CommandErrorException("The given directory does not exist");
         }
 
         // If everything is OK, return new DirectoryInfo.
