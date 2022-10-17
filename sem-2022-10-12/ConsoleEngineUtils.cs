@@ -12,8 +12,8 @@ public static partial class ConsoleEngine
     private static string RenderAutoComplete(string inp)
     {
         var args = inp.Split();
-        var targetDir = args[^1].Contains('/')
-            ? new DirectoryInfo(_currentDir.FullName + "/" + args[^1][..args[^1].LastIndexOf('/')])
+        var targetDir = args[^1].Contains(Path.DirectorySeparatorChar)
+            ? new DirectoryInfo(_currentDir.FullName + Path.DirectorySeparatorChar + args[^1][..args[^1].LastIndexOf(Path.DirectorySeparatorChar)])
             : _currentDir;
 
         var res = _commands.Keys.Where(command => command.StartsWith(args[^1]));
@@ -50,12 +50,12 @@ public static partial class ConsoleEngine
 
     private static string FormatFilePath(string filePath, DirectoryInfo rootDir)
     {
-        return filePath.Replace((rootDir.FullName ?? "") + "/", "");
+        return filePath.Replace(rootDir.FullName + Path.DirectorySeparatorChar, "");
     }
 
     private static string FormatDirPath(DirectoryInfo directoryInfo, DirectoryInfo rootDir)
     {
-        return directoryInfo.FullName.Replace((rootDir.FullName ?? "") + "/", "");
+        return directoryInfo.FullName.Replace(rootDir.FullName + Path.DirectorySeparatorChar, "");
     }
 
     private static string RenderHelpMessage(string inpCommand)
