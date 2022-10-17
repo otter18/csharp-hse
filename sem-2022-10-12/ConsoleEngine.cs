@@ -6,6 +6,8 @@
 
 namespace sem_2022_10_12;
 
+using ConsoleCommands;
+
 public static class ConsoleEngine
 {
     private static bool _exit = false;
