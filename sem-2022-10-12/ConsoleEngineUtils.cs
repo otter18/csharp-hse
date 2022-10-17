@@ -9,10 +9,35 @@ using ConsoleCommands;
 
 public static partial class ConsoleEngine
 {
-    private static string AutoCompleteCommand(string inp)
+    private static string RenderAutoComplete(string inp)
     {
-        // TODO: autocomplete
-        throw new NotImplementedException();
+        var args = inp.Split();
+        var targetDir = args[^1].Contains('/')
+            ? new DirectoryInfo(_currentDir.FullName + "/" + args[^1][..args[^1].LastIndexOf('/')])
+            : _currentDir;
+
+        var res = _commands.Keys.Where(command => command.StartsWith(args[^1]));
+        if (targetDir.Exists)
+        {
+            res = res.Concat(
+                targetDir.GetFiles()
+                    .Where(fileName => FormatFilePath(fileName.FullName, _currentDir).StartsWith(args[^1]))
+                    .Select(fileName => FormatFilePath(fileName.FullName, _currentDir))
+            );
+            res = res.Concat(
+                targetDir.GetDirectories()
+                    .Where(dirName => FormatDirPath(dirName, _currentDir).StartsWith(args[^1]))
+                    .Select(dirName => FormatDirPath(dirName, _currentDir))
+            );
+        }
+
+        if (res.Count() != 1)
+        {
+            return inp;
+        }
+
+        args[^1] = res.First();
+        return string.Join(" ", args);
     }
 
     private static void Erase(int cnt)
@@ -23,9 +48,14 @@ public static partial class ConsoleEngine
         }
     }
 
-    private static string FormatDirPath(DirectoryInfo directoryInfo)
+    private static string FormatFilePath(string filePath, DirectoryInfo rootDir)
     {
-        return directoryInfo.FullName.Replace((RootDir.Parent?.FullName ?? "") + "/", "");
+        return filePath.Replace((rootDir.FullName ?? "") + "/", "");
+    }
+
+    private static string FormatDirPath(DirectoryInfo directoryInfo, DirectoryInfo rootDir)
+    {
+        return directoryInfo.FullName.Replace((rootDir.FullName ?? "") + "/", "");
     }
 
     private static string RenderHelpMessage(string inpCommand)

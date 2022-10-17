@@ -12,7 +12,8 @@ public static partial class ConsoleEngine
 {
     private static bool _exit;
 
-    private const string AsciiArt = "  ____                  _         ____         ___  \n | __ )    __ _   ___  | |__     |___ \\       / _ \\ \n |  _ \\   / _` | / __| | '_ \\      __) |     | | | |\n | |_) | | (_| | \\__ \\ | | | |    / __/   _  | |_| |\n |____/   \\__,_| |___/ |_| |_|   |_____| (_)  \\___/ \n                                                    ";
+    private const string AsciiArt =
+        "  ____                  _         ____         ___  \n | __ )    __ _   ___  | |__     |___ \\       / _ \\ \n |  _ \\   / _` | / __| | '_ \\      __) |     | | | |\n | |_) | | (_| | \\__ \\ | | | |    / __/   _  | |_| |\n |____/   \\__,_| |___/ |_| |_|   |_____| (_)  \\___/ \n                                                    ";
 
     public static DirectoryInfo RootDir { get; } = new DirectoryInfo("sandbox");
     private static DirectoryInfo _currentDir = new DirectoryInfo("sandbox");
@@ -44,107 +45,115 @@ public static partial class ConsoleEngine
 
     private static void Loop()
     {
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.Write($"{FormatDirPath(_currentDir)} > ");
-        Console.ResetColor();
-
-        var lineHistory = new List<char>();
-        var keyPressed = Console.ReadKey(true);
-        ConsoleKeyInfo prevKeyPressed = new ConsoleKeyInfo();
-        var historyInd = _history.Count;
-        while (keyPressed.Key != ConsoleKey.Enter)
-        {
-            // reset historyInd if edited
-            if (keyPressed.Key != ConsoleKey.UpArrow && keyPressed.Key != ConsoleKey.DownArrow)
-            {
-                if (prevKeyPressed.Key is ConsoleKey.UpArrow or ConsoleKey.DownArrow)
-                {
-                    _history.RemoveAt(_history.Count - 1);
-                }
-
-                historyInd = _history.Count;
-            }
-
-            // print actual symbols
-            if (char.IsLetterOrDigit(keyPressed.KeyChar) ||
-                char.IsSymbol(keyPressed.KeyChar) ||
-                char.IsPunctuation(keyPressed.KeyChar))
-            {
-                Console.Write(keyPressed.KeyChar);
-                lineHistory.Add(keyPressed.KeyChar);
-            }
-            else if (keyPressed.Key == ConsoleKey.Spacebar &&
-                     lineHistory.Count > 0 &&
-                     lineHistory[^1] != keyPressed.KeyChar)
-            {
-                Console.Write(keyPressed.KeyChar);
-                lineHistory.Add(keyPressed.KeyChar);
-            }
-            else
-            {
-                // process pressed keys
-                switch (keyPressed.Key)
-                {
-                    case ConsoleKey.Backspace when lineHistory.Count > 0:
-                        Erase(1);
-                        lineHistory.RemoveAt(lineHistory.Count - 1);
-                        break;
-                    case ConsoleKey.Tab:
-                        // TODO: autocomplete
-                        break;
-                    case ConsoleKey.UpArrow when historyInd > 0:
-                        if (historyInd == _history.Count)
-                        {
-                            _history.Add(string.Join(null, lineHistory));
-                        }
-
-                        Erase(lineHistory.Count);
-                        historyInd--;
-                        lineHistory.Clear();
-                        foreach (var c in _history[historyInd])
-                        {
-                            Console.Write(c);
-                            lineHistory.Add(c);
-                        }
-
-                        break;
-                    case ConsoleKey.DownArrow when historyInd < _history.Count - 1:
-                        Erase(lineHistory.Count);
-                        historyInd++;
-                        lineHistory.Clear();
-                        foreach (var c in _history[historyInd])
-                        {
-                            Console.Write(c);
-                            lineHistory.Add(c);
-                        }
-
-                        if (historyInd == _history.Count - 1)
-                        {
-                            _history.RemoveAt(_history.Count - 1);
-                        }
-
-                        break;
-                }
-            }
-
-            prevKeyPressed = keyPressed;
-            keyPressed = Console.ReadKey(true);
-        }
-
-        Console.WriteLine();
-
-        if (lineHistory.Count <= 0)
-        {
-            return;
-        }
-
-        var inpCommand = string.Join(null, lineHistory).Trim();
-        _history.Add(inpCommand);
-
-        var inpCommandName = inpCommand.Split(" ")[0];
-
         try
         {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write($"{FormatDirPath(_currentDir, RootDir.Parent!)} > ");
+            Console.ResetColor();
+
+            var lineHistory = new List<char>();
+            var keyPressed = Console.ReadKey(true);
+            ConsoleKeyInfo prevKeyPressed = new ConsoleKeyInfo();
+            var historyInd = _history.Count;
+            while (keyPressed.Key != ConsoleKey.Enter)
+            {
+                // reset historyInd if edited
+                if (keyPressed.Key != ConsoleKey.UpArrow && keyPressed.Key != ConsoleKey.DownArrow)
+                {
+                    if (prevKeyPressed.Key is ConsoleKey.UpArrow or ConsoleKey.DownArrow)
+                    {
+                        _history.RemoveAt(_history.Count - 1);
+                    }
+
+                    historyInd = _history.Count;
+                }
+
+                // print actual symbols
+                if (char.IsLetterOrDigit(keyPressed.KeyChar) ||
+                    char.IsSymbol(keyPressed.KeyChar) ||
+                    char.IsPunctuation(keyPressed.KeyChar))
+                {
+                    Console.Write(keyPressed.KeyChar);
+                    lineHistory.Add(keyPressed.KeyChar);
+                }
+                else if (keyPressed.Key == ConsoleKey.Spacebar &&
+                         lineHistory.Count > 0 &&
+                         lineHistory[^1] != keyPressed.KeyChar)
+                {
+                    Console.Write(keyPressed.KeyChar);
+                    lineHistory.Add(keyPressed.KeyChar);
+                }
+                else
+                {
+                    // process pressed keys
+                    switch (keyPressed.Key)
+                    {
+                        case ConsoleKey.Backspace when lineHistory.Count > 0:
+                            Erase(1);
+                            lineHistory.RemoveAt(lineHistory.Count - 1);
+                            break;
+                        case ConsoleKey.Tab:
+                            Erase(lineHistory.Count);
+                            var res = RenderAutoComplete(string.Join(null, lineHistory));
+                            lineHistory.Clear();
+                            foreach (var c in res)
+                            {
+                                Console.Write(c);
+                                lineHistory.Add(c);
+                            }
+
+                            break;
+                        case ConsoleKey.UpArrow when historyInd > 0:
+                            if (historyInd == _history.Count)
+                            {
+                                _history.Add(string.Join(null, lineHistory));
+                            }
+
+                            Erase(lineHistory.Count);
+                            historyInd--;
+                            lineHistory.Clear();
+                            foreach (var c in _history[historyInd])
+                            {
+                                Console.Write(c);
+                                lineHistory.Add(c);
+                            }
+
+                            break;
+                        case ConsoleKey.DownArrow when historyInd < _history.Count - 1:
+                            Erase(lineHistory.Count);
+                            historyInd++;
+                            lineHistory.Clear();
+                            foreach (var c in _history[historyInd])
+                            {
+                                Console.Write(c);
+                                lineHistory.Add(c);
+                            }
+
+                            if (historyInd == _history.Count - 1)
+                            {
+                                _history.RemoveAt(_history.Count - 1);
+                            }
+
+                            break;
+                    }
+                }
+
+                prevKeyPressed = keyPressed;
+                keyPressed = Console.ReadKey(true);
+            }
+
+            Console.WriteLine();
+
+            if (lineHistory.Count <= 0)
+            {
+                return;
+            }
+
+            var inpCommand = string.Join(null, lineHistory).Trim();
+            _history.Add(inpCommand);
+
+            var inpCommandName = inpCommand.Split(" ")[0];
+
             // process generic commands
             foreach (var command in _commands.Keys.Where(command => inpCommandName == command))
             {
@@ -174,26 +183,24 @@ public static partial class ConsoleEngine
                 default:
                     break;
             }
+
+            // error if command not found
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Command {inpCommandName} not found. Use help to list available commands");
+            Console.ResetColor();
         }
         catch (CommandErrorException e)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(e.Message);
             Console.ResetColor();
-            return;
         }
         catch (Exception e)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(e);
             Console.ResetColor();
-            return;
         }
-
-        // error if command not found
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"Command {inpCommandName} not found. Use help to list available commands");
-        Console.ResetColor();
     }
 
 
