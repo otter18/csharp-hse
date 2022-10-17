@@ -87,6 +87,15 @@ public static partial class ConsoleEngine
 
         return "";
     }
+
+    /// <summary>
+    /// Checks if the root directory of the ConsoleEngine is parent
+    /// of the given directory. 
+    /// </summary>
+    public static bool IsInRoot(DirectoryInfo directoryToCheck)
+    {
+        return directoryToCheck.FullName.StartsWith(ConsoleEngine.RootDir.FullName);
+    }
 }
 
 internal class CommandErrorException : ApplicationException

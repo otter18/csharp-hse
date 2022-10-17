@@ -30,15 +30,6 @@ public class CdConsoleCommand : IConsoleCommand
     }
 
     /// <summary>
-    /// Checks if the root directory of the ConsoleEngine is parent
-    /// of the given directory. 
-    /// </summary>
-    private bool IsInRoot(DirectoryInfo directoryToCheck)
-    {
-        return directoryToCheck.FullName.StartsWith(ConsoleEngine.RootDir.FullName);
-    }
-
-    /// <summary>
     /// Returns ConsoleState object with the same directory as it was
     /// before calling cd command with the description of the reason why
     /// the directory hasn't changed.
@@ -141,7 +132,7 @@ public class CdConsoleCommand : IConsoleCommand
         
         
         // Checking if the result directory is still in the root directory.
-        if (IsInRoot(directoryUnderChange) is false)
+        if (ConsoleEngine.IsInRoot(directoryUnderChange) is false)
         {
             return NoMoveDueError(
                 $"Cannot leave the root directory: {ConsoleEngine.RootDir.FullName}",
