@@ -3,7 +3,7 @@
 // Author: $YOUR NAME$
 // Group: БПИ229
 
-namespace sem_2022_10_12;
+namespace sem_2022_10_12.ConsoleCommands;
 
 public class TouchConsoleCommand : IConsoleCommand
 {

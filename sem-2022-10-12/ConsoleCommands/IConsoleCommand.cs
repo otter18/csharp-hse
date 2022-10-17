@@ -3,7 +3,7 @@
 // Author: Черных Владимир Артемович
 // Group: БПИ229
 
-namespace sem_2022_10_12;
+namespace sem_2022_10_12.ConsoleCommands;
 
 public interface IConsoleCommand
 {
