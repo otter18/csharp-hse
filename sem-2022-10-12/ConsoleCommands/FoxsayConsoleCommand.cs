@@ -1,6 +1,6 @@
 // Solution: hse - sem-2022-10-12 - FoxsayConsoleCommand.cs
 // Created at 2022-10-17 20:33
-// Author: Черных Владимир Артемович
+// Author: Черных Владимир
 // Group: БПИ229
 
 namespace sem_2022_10_12.ConsoleCommands;

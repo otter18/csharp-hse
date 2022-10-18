@@ -1,6 +1,6 @@
 // Solution: hse - sem-2022-10-12 - ConsoleEngine.cs
 // Created at 2022-10-15 20:01
-// Author: Черных Владимир Артемович
+// Author: Черных Владимир
 // Group: БПИ229
 
 
@@ -12,11 +12,10 @@ public static partial class ConsoleEngine
 {
     private static bool _exit;
 
-    private const string AsciiArt =
-        "  ____                  _         ____         ___  \n | __ )    __ _   ___  | |__     |___ \\       / _ \\ \n |  _ \\   / _` | / __| | '_ \\      __) |     | | | |\n | |_) | | (_| | \\__ \\ | | | |    / __/   _  | |_| |\n |____/   \\__,_| |___/ |_| |_|   |_____| (_)  \\___/ \n                                                    ";
+    private const string AsciiArt = "  ____                  _         ____         ___  \n | __ )    __ _   ___  | |__     |___ \\       / _ \\ \n |  _ \\   / _` | / __| | '_ \\      __) |     | | | |\n | |_) | | (_| | \\__ \\ | | | |    / __/   _  | |_| |\n |____/   \\__,_| |___/ |_| |_|   |_____| (_)  \\___/ \n                                                    ";
 
-    public static DirectoryInfo RootDir { get; } = new DirectoryInfo("sandbox");
-    private static DirectoryInfo _currentDir = new DirectoryInfo("sandbox");
+    public static DirectoryInfo RootDir { get; } = new ("sandbox");
+    private static DirectoryInfo _currentDir = new ("sandbox");
 
     private static List<string> _history = new List<string>();
 
@@ -30,7 +29,8 @@ public static partial class ConsoleEngine
         { "cp", new CpConsoleCommand() },
         { "rm", new RmConsoleCommand() },
         { "tree", new TreeConsoleCommand() },
-        { "foxsay", new FoxsayConsoleCommand() }
+        { "foxsay", new FoxsayConsoleCommand() },
+        { "echo", new EchoConsoleCommand() }
     };
 
     private static void Init()
