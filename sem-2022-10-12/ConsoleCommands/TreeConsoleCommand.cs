@@ -48,6 +48,6 @@ public class TreeConsoleCommand : IConsoleCommand
 
     public string GetHelpMessage()
     {
-        return "tree <depth: 1, 2 ... n>\nOutputs file tree. Depth can be specified.";
+        return "tree <depth?>\nOutputs file tree. Depth can be specified.";
     }
 }
