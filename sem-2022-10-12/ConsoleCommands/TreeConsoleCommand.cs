@@ -20,7 +20,7 @@ public class TreeConsoleCommand : IConsoleCommand
             RecursiveRender(ref res, dir, depth, currDepth + 1);
         }
 
-        foreach (var file in currentDir.GetFiles())
+        foreach (var file in currentDir.GetFiles().Where(x => x.Name[0] != '.'))
         {
             res += $"{string.Concat(Enumerable.Repeat("│  ", currDepth))}├─ {file.Name}\n";
         }
