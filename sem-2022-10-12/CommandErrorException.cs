@@ -15,7 +15,7 @@ public class CommandErrorException : ApplicationException
     {
     }
 
-    public CommandErrorException(string message, Exception inner) : base(message, inner)
+    public CommandErrorException(string message, Exception inner) : base($"{message}\n\n{inner}")
     {
     }
 }
