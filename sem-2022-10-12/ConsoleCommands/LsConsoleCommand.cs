@@ -3,6 +3,8 @@
 // Author: 
 // Group: БПИ229
 
+using System.Diagnostics;
+using System.IO.Enumeration;
 using System.Text.Json;
 
 namespace sem_2022_10_12.ConsoleCommands;
@@ -13,16 +15,61 @@ public class LsConsoleCommand : IConsoleCommand
     // BUG: Current implementation is for testing purposes
     public ConsoleState Process(string inpCommand, DirectoryInfo currentDir)
     {
-        return new ConsoleState
+        var flagCommand = inpCommand.Split();
+
+        if (flagCommand.Length == 1)
         {
-            Result = (string.Join('\n', currentDir.GetDirectories().Select(x => x.Name)) + '\n' +
-                      string.Join('\n', currentDir.GetFiles().Select(x => x.Name))).Trim(),
-            CurrentDir = currentDir
-        };
+            var filesInCurrentDir = GetFilesFromCurrentDir(currentDir);
+            var dirInCurrentDir = GetDirectoriesFromCurrentDir(currentDir);
+            var resultTable = GenerResultTable(ref filesInCurrentDir, ref dirInCurrentDir);
+            return new ConsoleState
+            { 
+                Result = resultTable.Trim(),
+                CurrentDir = currentDir
+            };
+        }
+        /*switch (flag[1])
+        {
+            case ;
+        }
+        */
+        return new ConsoleState();
+    }
+
+    public List<string> GetFilesFromCurrentDir(DirectoryInfo currentDir)
+    {
+        return currentDir.GetFiles().Select(x => x.Name).ToList();
+    }
+    
+    public List<string> GetDirectoriesFromCurrentDir(DirectoryInfo currentDir)
+    {
+        return currentDir.GetDirectories().Select(x => x.Name).ToList();
+    }
+
+    public string GenerResultTable(ref List<string> filesInCurrentDir, ref List<string> dirInCurrentDir)
+    {
+        var resultTable = new string('-', 45)
+                          + "\n" + string.Format("|{0,20}|{1,20}|", "Directories", "Files")
+                          + "\n" + new string('-', 45) +"\n";
+        
+        for (int i = 0; i < Math.Max(filesInCurrentDir.Count(), dirInCurrentDir.Count()); i++)
+        {
+            var fileName = i < filesInCurrentDir.Count ? filesInCurrentDir[i] : "";
+            var dirName = i < dirInCurrentDir.Count ? dirInCurrentDir[i] : "";
+            resultTable += string.Format("|{0, 20}|{1,20}|", dirName, fileName) + "\n";
+        }
+
+        resultTable += new string('-', 45);
+        return resultTable;
     }
 
     public string GetHelpMessage()
     {
-        return "botva";
+        var mess = "I'll write this part tomorrow \n and now I want to present you a rabbit \n" +
+                    "(\\__/)\n"+
+                    "(='.'=)\n"+
+                    "(\")_(\")";
+           
+        return mess;
     }
 }
