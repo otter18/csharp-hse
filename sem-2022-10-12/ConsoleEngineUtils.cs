@@ -5,8 +5,6 @@
 
 namespace sem_2022_10_12;
 
-using ConsoleCommands;
-
 public static partial class ConsoleEngine
 {
     private static string RenderAutoComplete(string inp)
@@ -87,6 +85,54 @@ public static partial class ConsoleEngine
         }
 
         return "";
+    }
+
+    private static void WriteLine(string s, ConsoleColor? consoleColor = null)
+    {
+        if (consoleColor is not null)
+        {
+            Console.ForegroundColor = (ConsoleColor)consoleColor;
+        }
+
+        Console.WriteLine(s);
+        Console.ResetColor();
+    }
+
+    private static void Write(string s, ConsoleColor? consoleColor = null)
+    {
+        if (consoleColor is not null)
+        {
+            Console.ForegroundColor = (ConsoleColor)consoleColor;
+        }
+
+        Console.Write(s);
+        Console.ResetColor();
+    }
+
+    private static void OutputResult(string result, ConsoleColor? consoleColor = null, DirectoryInfo? outFile = null)
+    {
+        // ignore empty result
+        if (result == "")
+        {
+            return;
+        }
+
+        // output to console if outFile is null
+        if (outFile is null)
+        {
+            WriteLine(result, consoleColor);
+            return;
+        }
+
+        // otherwise write to file
+        File.WriteAllText(outFile.FullName, result);
+    }
+
+    private static DirectoryInfo GetFullPath(string path)
+    {
+        return path.StartsWith('/')
+            ? new DirectoryInfo(Path.Combine(RootDir.FullName, path))
+            : new DirectoryInfo(Path.Combine(_currentDir.FullName, path));
     }
 
     /// <summary>

@@ -47,11 +47,11 @@ public static partial class ConsoleEngine
 
     private static void Loop()
     {
+        DirectoryInfo? outFile = null;
+
         try
         {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write($"{FormatDirPath(_currentDir, RootDir.Parent!)} > ");
-            Console.ResetColor();
+            Write($"{FormatDirPath(_currentDir, RootDir.Parent!)} > ", ConsoleColor.Green);
 
             var lineHistory = new List<char>();
             var keyPressed = Console.ReadKey(true);
@@ -146,25 +146,32 @@ public static partial class ConsoleEngine
 
             Console.WriteLine();
 
+            // return if input empty
             if (lineHistory.Count <= 0)
             {
                 return;
             }
 
+            // get string input
             var inpCommand = string.Join(null, lineHistory).Trim();
             _history.Add(inpCommand);
 
             var inpCommandName = inpCommand.Split(" ")[0];
 
-            // process generic commands
-            foreach (var command in _commands.Keys.Where(command => inpCommandName == command))
+            // check if result should be saved in file (command > file)
+            if (inpCommand.Contains('>'))
             {
-                var (result, newCurrentDir) = _commands[command].Process(inpCommand, _currentDir);
+                var i = inpCommand.LastIndexOf('>');
+                outFile = GetFullPath(inpCommand[(i + 1)..].Trim());
+                inpCommand = inpCommand[..i].Trim();
+            }
+
+            // process generic commands
+            if (_commands.ContainsKey(inpCommandName))
+            {
+                var (result, newCurrentDir) = _commands[inpCommandName].Process(inpCommand, _currentDir);
                 _currentDir = newCurrentDir;
-                if (result.Length != 0)
-                {
-                    Console.WriteLine(result);
-                }
+                OutputResult(result, outFile: outFile);
 
                 return;
             }
@@ -180,28 +187,30 @@ public static partial class ConsoleEngine
                     _exit = true;
                     return;
                 case "help":
-                    Console.WriteLine(RenderHelpMessage(inpCommand));
+                    OutputResult(RenderHelpMessage(inpCommand), outFile: outFile);
                     return;
-                default:
-                    break;
             }
 
             // error if command not found
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Command {inpCommandName} not found. Use help to list available commands");
-            Console.ResetColor();
+            OutputResult(
+                $"Command {inpCommandName} not found. Use help to list available commands",
+                consoleColor: ConsoleColor.Red,
+                outFile: outFile
+            );
         }
         catch (CommandErrorException e)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(e.Message);
-            Console.ResetColor();
+            OutputResult(
+                e.Message,
+                consoleColor: ConsoleColor.Red
+            );
         }
         catch (Exception e)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(e);
-            Console.ResetColor();
+            OutputResult(
+                e.ToString(),
+                consoleColor: ConsoleColor.Red
+            );
         }
     }
 
