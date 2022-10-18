@@ -2,7 +2,7 @@
 
 ![](imgs/demo.gif)
 
-## Basic guide (ConsoleEngine by [[@otter18](https://github.com/otter18](https://github.com/]))
+## Basic guide (ConsoleEngine by [@otter18](https://github.com/otter18))
 
 - enter command. press `enter` to execute command
 - use `tab` to autocomplete commands and paths
