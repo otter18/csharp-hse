@@ -111,11 +111,13 @@ public class CatConsoleCommand : IConsoleCommand
                 {
                     lines.AddRange(File.ReadLines(fileFullPath));
                 }
+                catch (FileNotFoundException)
+                {
+                    throw new CommandErrorException("File doesn't exist");
+                }
                 catch (Exception e)
                 {
-                    throw new CommandErrorException(
-                        $"An exception occured while reading from file",
-                        e);
+                    throw new CommandErrorException("Unexpected exception occured while reading from file", e);
                 }
             }
         }
