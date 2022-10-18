@@ -1,11 +1,11 @@
 // Solution: hse - sem-2022-10-12 - CatConsoleCommand.cs
 // Created at 2022-10-15 23:26
-// Author: 
+// Author: Виктор Филимонов
 // Group: БПИ229
 
 namespace sem_2022_10_12.ConsoleCommands;
 
-public class CatConsoleCommand: IConsoleCommand
+public class CatConsoleCommand : IConsoleCommand
 {
     // Static thing to remember the previous position
     // to move between pages using arrows.
@@ -14,7 +14,7 @@ public class CatConsoleCommand: IConsoleCommand
     private bool _printPage = false;
     private int _pageNumber = 1;
     private int _pageSize = 20;
-    
+
     public ConsoleState Process(string inpCommand, DirectoryInfo currentDir)
     {
         var lines = new List<string>();
@@ -44,8 +44,8 @@ public class CatConsoleCommand: IConsoleCommand
 
                     parameterSet = true;
                 }
-                
-                
+
+
                 switch (flag)
                 {
                     case "-n":
@@ -59,6 +59,7 @@ public class CatConsoleCommand: IConsoleCommand
                         {
                             value = 1;
                         }
+
                         if (value < 1)
                         {
                             throw new CommandErrorException("Inappropriate page number parameter");
@@ -77,6 +78,7 @@ public class CatConsoleCommand: IConsoleCommand
                         {
                             throw new CommandErrorException("Page size parameter must be set");
                         }
+
                         _pageSize = value;
                         break;
                     default:
@@ -86,20 +88,20 @@ public class CatConsoleCommand: IConsoleCommand
             else
             {
                 // got a file
-                
+
                 // get file full path
                 var fileFullPath = element;
                 // if the file doesn't start with 'sandbox', assume that
                 // it's path is relative
                 if (!fileFullPath.StartsWith("sandbox"))
                 {
-                    fileFullPath = currentDir.FullName 
+                    fileFullPath = currentDir.FullName
                                    + Path.DirectorySeparatorChar
                                    + element;
                 }
                 else
                 {
-                    fileFullPath = ConsoleEngine.RootDir.FullName 
+                    fileFullPath = ConsoleEngine.RootDir.FullName
                                    + Path.DirectorySeparatorChar
                                    + element[7..];
                 }
@@ -107,8 +109,7 @@ public class CatConsoleCommand: IConsoleCommand
                 // try to read from the file
                 try
                 {
-                    lines.AddRange(
-                        File.ReadLines(fileFullPath));
+                    lines.AddRange(File.ReadLines(fileFullPath));
                 }
                 catch (Exception e)
                 {
@@ -119,46 +120,48 @@ public class CatConsoleCommand: IConsoleCommand
             }
         }
 
-        // return the result
-        if (outMessage == "")
+        // return the result if not empty
+        if (outMessage != "")
         {
-            // counts the number of skipped during -s lines to keep the numeration right
-            var skippedLines = 0; 
-
-            // the start and the end of the loop
-            var low = 0;
-            var high = lines.Count;
-
-            // if -p used, iterate only through required lines
-            if (_printPage)
-            {
-                low = (_pageNumber - 1) * _pageSize;
-                high = Math.Min(_pageNumber * _pageSize, lines.Count);
-            }
-            
-            for (var i = low; i < high; ++i)
-            {
-                var line = lines[i];
-                
-                // implements -s flag
-                if (_skipLines && i > 0 && lines[i - 1] == "" && line == "")
-                {
-                    ++skippedLines;
-                    continue;
-                }
-
-                // implements -s flag, considering -n flag and the beginning of the loop
-                if (_numerateLines)
-                {
-                    line = $"{i - skippedLines + 1 - low}.\t {line}";
-                }
-                    
-                
-                outMessage = outMessage + line + "\n";
-            }
+            return new ConsoleState { Result = outMessage, CurrentDir = currentDir };
         }
-        
-        return new ConsoleState {Result = outMessage, CurrentDir = currentDir};
+
+        // counts the number of skipped during -s lines to keep the numeration right
+        var skippedLines = 0;
+
+        // the start and the end of the loop
+        var low = 0;
+        var high = lines.Count;
+
+        // if -p used, iterate only through required lines
+        if (_printPage)
+        {
+            low = (_pageNumber - 1) * _pageSize;
+            high = Math.Min(_pageNumber * _pageSize, lines.Count);
+        }
+
+        for (var i = low; i < high; ++i)
+        {
+            var line = lines[i];
+
+            // implements -s flag
+            if (_skipLines && i > 0 && lines[i - 1] == "" && line == "")
+            {
+                ++skippedLines;
+                continue;
+            }
+
+            // implements -s flag, considering -n flag and the beginning of the loop
+            if (_numerateLines)
+            {
+                line = $"{i - skippedLines + 1 - low}.\t {line}";
+            }
+
+
+            outMessage = outMessage + line + "\n";
+        }
+
+        return new ConsoleState { Result = outMessage, CurrentDir = currentDir };
     }
 
     public string GetHelpMessage()
