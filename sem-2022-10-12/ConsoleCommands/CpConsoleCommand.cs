@@ -12,101 +12,88 @@ public class CpConsoleCommand : IConsoleCommand
         // Console.WriteLine($"!!! {new StackTrace().GetFrame(0).GetMethod().Name}");
         // split input command
         var inc = inpCommand.Split();
-        if (inc.Length < 3)
+        if (inc.Length < 2) throw new CommandErrorException("Arguments are required.");
+        if (inc[1] == "-r")
         {
-            return new ConsoleState() { Result = "Wrong arguments.\n", CurrentDir = currentDir };
+            if (inc.Length != 4) throw new CommandErrorException("Three arguments are required.");
+            return DoCPr(inc, currentDir);
         }
-        else
-        {
-            if (inc[1] == "-r")
-            {
-                return inc.Length == 4 
-                    ? DoCPr(inc, currentDir)
-                    : new ConsoleState() { Result = "Wrong arguments.\n", CurrentDir = currentDir };
-            }
-            return inc.Length > 2
-                ? DoCP(inc, currentDir)
-                : new ConsoleState() { Result = "Wrong arguments.\n", CurrentDir = currentDir };
-        }
+        if (inc.Length < 3) throw new CommandErrorException("Two or more arguments are required.");
+        return DoCP(inc, currentDir);
     }
 
-    private void DoCPrAll(string ofp, DirectoryInfo dis, DirectoryInfo dit)
+    
+    private void DoCPrAll(string ofp, DirectoryInfo idi, DirectoryInfo odi)
     {
-        Directory.CreateDirectory(dit.FullName);
+        Directory.CreateDirectory(odi.FullName);
 
         // Copy each file into the new directory.
-        foreach (var fi in dis.GetFiles())
+        foreach (var fi in idi.GetFiles())
         {
-            // Console.WriteLine($"Copying {Path.Combine(dit.FullName, fi.Name)}");
-            fi.CopyTo(Path.Combine(dit.FullName, fi.Name), true);
+            // Console.WriteLine($"Copying {Path.Combine(odi.FullName, fi.Name)}");
+            fi.CopyTo(Path.Combine(odi.FullName, fi.Name), true);
         }
 
         // Copy each subdirectory using recursion.
-        foreach (var disSubDir in dis.GetDirectories())
+        foreach (var idiSubDir in idi.GetDirectories())
         {
-            if (disSubDir.FullName == ofp) continue;
-            var dirSubDir = dit.CreateSubdirectory(disSubDir.Name);
-            DoCPrAll(ofp, disSubDir, dirSubDir);
+            if (idiSubDir.FullName == ofp) continue;
+            var odiSubDir = odi.CreateSubdirectory(idiSubDir.Name);
+            DoCPrAll(ofp, idiSubDir, odiSubDir);
         }
     }
 
+    
     private ConsoleState DoCPr(string[] inc, DirectoryInfo currentDir)
     {
         // Console.WriteLine($"!!! {new StackTrace().GetFrame(0).GetMethod().Name}");
         var ifp = "";
         var ofp = "";
-        // test input arguments count
-        if (inc.Length != 4)
-        {
-            return new ConsoleState() { Result = $"Wrong arguments.\n", CurrentDir = currentDir };
-        }
-        // expand "from_files" to full path & test exist
+        // expand "to_files" to full path
         ofp = inc[3][0] == Path.DirectorySeparatorChar
-            ? Path.GetFullPath(Path.Combine(ConsoleEngine.RootDir.FullName, inc[3]))
+            ? Path.GetFullPath(ConsoleEngine.RootDir.FullName + inc[3])
             : Path.GetFullPath(Path.Combine(currentDir.FullName, inc[3]));
         // Console.WriteLine($">>> {ofp}");
-        if (!ofp.StartsWith($"{ConsoleEngine.RootDir.FullName}{Path.DirectorySeparatorChar}") || !Directory.Exists(ofp))
+        if (!ofp.StartsWith($"{ConsoleEngine.RootDir.FullName}{Path.DirectorySeparatorChar}"))
         {
-            return new ConsoleState() { Result = $"Path not found: {inc[3]}\n", CurrentDir = currentDir };
+            throw new CommandErrorException($"Path is not found: {inc[3]}");
         }
-        // expand "to_folder" to full path & test exist
+        // expand "from_folder" to full path & test exist
         ifp = inc[2][0] == Path.DirectorySeparatorChar
-            ? Path.GetFullPath(Path.Combine(ConsoleEngine.RootDir.FullName, inc[2]))
+            ? Path.GetFullPath(ConsoleEngine.RootDir.FullName + inc[2])
             : Path.GetFullPath(Path.Combine(currentDir.FullName, inc[2]));
-        if (!ifp.EndsWith("/")) ifp += Path.DirectorySeparatorChar;
+        if (!ifp.EndsWith(Path.DirectorySeparatorChar)) ifp += Path.DirectorySeparatorChar;
         // Console.WriteLine($">>> {ifp}");
         if (!ifp.StartsWith($"{ConsoleEngine.RootDir.FullName}{Path.DirectorySeparatorChar}") || !Directory.Exists(ifp))
         {
-            return new ConsoleState() { Result = $"Path not found: {inc[2]}\n", CurrentDir = currentDir };
+            throw new CommandErrorException($"Path is not found: {inc[2]}");
         }
         // do copy
-        DirectoryInfo dis = new DirectoryInfo(ifp);
-        DirectoryInfo dit = new DirectoryInfo(ofp);
+        DirectoryInfo idi = new DirectoryInfo(ifp);
+        DirectoryInfo odi = new DirectoryInfo(ofp);
         try
         {
-            DoCPrAll(ofp, dis, dit);
+            DoCPrAll(ofp, idi, odi);
         }
         catch
         {
-            return new ConsoleState() { Result = $"Error copy to path {inc[3]}\n", CurrentDir = currentDir };
+            throw new CommandErrorException($"Unable to copy to the path {inc[3]}");
         }
         // return
         return new ConsoleState() { Result = "", CurrentDir = currentDir };
     }
 
+    
     private ConsoleState DoCP(string[] inc, DirectoryInfo currentDir)
     {
         // Console.WriteLine($"!!! {new StackTrace().GetFrame(0).GetMethod().Name}");
         // test input arguments count
-        if (inc.Length == 3)
-        {
-            return DoCP_ff(inc, currentDir);
-        }
-        return inc.Length > 3
-            ? DoCP_ffp(inc, currentDir)
-            :  new ConsoleState() { Result = $"Wrong arguments.\n", CurrentDir = currentDir };
+        return inc.Length == 3
+            ? DoCP_ff(inc, currentDir)
+            : DoCP_ffp(inc, currentDir);
     }
 
+    
     private ConsoleState DoCP_ff(string[] inc, DirectoryInfo currentDir)
     {
         // Console.WriteLine($"!!! {new StackTrace().GetFrame(0).GetMethod().Name}");
@@ -114,34 +101,36 @@ public class CpConsoleCommand : IConsoleCommand
         var ofp = "";
         // expand "to_file" to full path & test for directory & test path exist
         ofp = inc[2][0] == Path.DirectorySeparatorChar
-            ? Path.GetFullPath(Path.Combine(ConsoleEngine.RootDir.FullName, inc[2]))
+            ? Path.GetFullPath(ConsoleEngine.RootDir.FullName + inc[2])
             : Path.GetFullPath(Path.Combine(currentDir.FullName,inc[2]));
         // Console.WriteLine($">>> {ofp}");
-        if (Directory.Exists(ofp) || ofp.EndsWith("/"))
+        if (Directory.Exists(ofp) || ofp.EndsWith(Path.DirectorySeparatorChar))
         {
             return DoCP_ffp(inc, currentDir);
         }
         if (!ofp.StartsWith($"{ConsoleEngine.RootDir.FullName}{Path.DirectorySeparatorChar}"))
         {
-            return new ConsoleState() { Result = $"Path not found: {inc[2]}\n", CurrentDir = currentDir };
+            throw new CommandErrorException($"Path is not found: {inc[2]}");
         }
         // expand "from_file" to full path & test file exist
         ifp = inc[1][0] == Path.DirectorySeparatorChar
-            ? Path.GetFullPath(Path.Combine(ConsoleEngine.RootDir.FullName, inc[1]))
+            ? Path.GetFullPath(ConsoleEngine.RootDir.FullName + inc[1])
             : Path.GetFullPath(Path.Combine(currentDir.FullName,inc[1]));
         // Console.WriteLine($">>> {ifp}");
         if (!ifp.StartsWith($"{ConsoleEngine.RootDir.FullName}{Path.DirectorySeparatorChar}") || !File.Exists(ifp))
         {
-            return new ConsoleState() { Result = $"File not found: {inc[1]}\n", CurrentDir = currentDir };
+            throw new CommandErrorException($"File is not found: {inc[1]}");
         }
         // do copy with overwrite
         try
         {
+            // Console.WriteLine($">>> {Path.GetDirectoryName(ofp)}");
+            Directory.CreateDirectory(Path.GetDirectoryName(ofp));
             File.Copy(ifp, ofp, true);
         }
         catch
         {
-            return new ConsoleState() { Result = $"Error copy to file {inc[2]}\n", CurrentDir = currentDir };
+            throw new CommandErrorException($"Unable to copy to the file: {inc[2]}");
         }
         return new ConsoleState() { Result = "", CurrentDir = currentDir };
     }
@@ -151,28 +140,38 @@ public class CpConsoleCommand : IConsoleCommand
     {
         // Console.WriteLine($"!!! {new StackTrace().GetFrame(0).GetMethod().Name}");
         int i, j;
-        var ifp = new string[inc.Length-2];
+        var ifp = new string[inc.Length - 2];
         var ofp = "";
         // expand "from_files" to full path & test exist
-        for (i=1, j=0; i < inc.Length - 1; ++i, ++j)
+        for (i = 1, j = 0; i < inc.Length - 1; ++i, ++j)
         {
             ifp[j] = inc[i][0] == Path.DirectorySeparatorChar
-                ? Path.GetFullPath(Path.Combine(ConsoleEngine.RootDir.FullName, inc[i]))
+                ? Path.GetFullPath(ConsoleEngine.RootDir.FullName + inc[i])
                 : Path.GetFullPath(Path.Combine(currentDir.FullName, inc[i]));
             // Console.WriteLine($">>> {ifp[j]}");
             if (!ifp[j].StartsWith($"{ConsoleEngine.RootDir.FullName}{Path.DirectorySeparatorChar}") || !File.Exists(ifp[j]))
             {
-                return new ConsoleState() { Result = $"File not found: {inc[i]}\n", CurrentDir = currentDir };
+                throw new CommandErrorException($"File is not found: {inc[i]}");
             }
         }
         // expand "to_folder" to full path & test exist
         ofp = inc[i][0] == Path.DirectorySeparatorChar
-            ? Path.GetFullPath(Path.Combine(ConsoleEngine.RootDir.FullName, inc[i]))
+            ? Path.GetFullPath(ConsoleEngine.RootDir.FullName + inc[i])
             : Path.GetFullPath(Path.Combine(currentDir.FullName, inc[i]));
         // Console.WriteLine($">>> {ofp}");
-        if (!ofp.StartsWith($"{ConsoleEngine.RootDir.FullName}{Path.DirectorySeparatorChar}") || !Directory.Exists(ofp))
+        if (!ofp.StartsWith($"{ConsoleEngine.RootDir.FullName}{Path.DirectorySeparatorChar}"))
         {
-            return new ConsoleState() { Result = $"Path not found: {inc[i]}\n", CurrentDir = currentDir };
+            throw new CommandErrorException($"Path is not found: {inc[i]}");
+        }
+        
+        try
+        {
+            if (!ofp.EndsWith(Path.DirectorySeparatorChar)) ofp += Path.DirectorySeparatorChar;
+            Directory.CreateDirectory(Path.GetDirectoryName(ofp));
+        }
+        catch
+        {
+            throw new CommandErrorException($"Unable to create the directory: {inc[i]}");
         }
         // do copy with overwrite
         foreach (var fp in ifp)
@@ -184,13 +183,14 @@ public class CpConsoleCommand : IConsoleCommand
             }
             catch
             {
-                return new ConsoleState() { Result = $"Error copy to directory {inc[i]}\n", CurrentDir = currentDir };
+                throw new CommandErrorException($"Unable to copy to the directory: {inc[i]}");
             }
         }
         // return
         return new ConsoleState() { Result = "", CurrentDir = currentDir };
     }
 
+    
     public string GetHelpMessage()
     {
         // Console.WriteLine($"!!! {new StackTrace().GetFrame(0).GetMethod().Name}");

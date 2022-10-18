@@ -22,28 +22,29 @@ public class RmConsoleCommand : IConsoleCommand
         return DoRM(inc, currentDir);
     }
 
+    
     private ConsoleState DoRMr(string[] inc, DirectoryInfo currentDir)
     {
         // Console.WriteLine($"!!! {new StackTrace().GetFrame(0).GetMethod().Name}");
-        var ifp = new string[inc.Length-2];
+        var ifp = new string[inc.Length - 2];
         // expand "from_files" to full path & test exist
-        for (int i=2, j=0; i < inc.Length; ++i, ++j)
+        for (int i = 2, j = 0; i < inc.Length; ++i, ++j)
         {
             ifp[j] = inc[i][0] == Path.DirectorySeparatorChar
-                ? Path.GetFullPath(Path.Combine(ConsoleEngine.RootDir.FullName, inc[i]))
+                ? Path.GetFullPath(ConsoleEngine.RootDir.FullName + inc[i])
                 : Path.GetFullPath(Path.Combine(currentDir.FullName, inc[i]));
             // Console.WriteLine($">>> {ifp[j]}");
-            if (ifp[j] == ConsoleEngine.RootDir.FullName + Path.DirectorySeparatorChar || ifp[j] == ConsoleEngine.RootDir.FullName || ifp[j] == "/")
+            if (ifp[j] == ConsoleEngine.RootDir.FullName + Path.DirectorySeparatorChar || ifp[j] == ConsoleEngine.RootDir.FullName || ifp[j] == Path.DirectorySeparatorChar.ToString())
             {
-                return new ConsoleState() { Result = $"Can not delete root directory: {inc[i]}\n", CurrentDir = currentDir };
+                throw new CommandErrorException($"Unable to delete the root directory: {inc[i]}");
             }
             if (!ifp[j].StartsWith(ConsoleEngine.RootDir.FullName+Path.DirectorySeparatorChar) || !Directory.Exists(ifp[j]))
             {
-                return new ConsoleState() { Result = $"Path not found: {inc[i]}\n", CurrentDir = currentDir };
+                throw new CommandErrorException($"Path is not found: {inc[i]}");
             }
         }
         // remove files
-        for (int j=0; j < ifp.Length; ++j)
+        for (int j = 0; j < ifp.Length; ++j)
         {
             // Console.WriteLine($">>> {ifp[j]}");
             try
@@ -52,32 +53,32 @@ public class RmConsoleCommand : IConsoleCommand
             }
             catch
             {
-                // Console.WriteLine($"{ex.Message}");
-                return new ConsoleState() { Result = $"File delete error: {inc[j+2]}\n", CurrentDir = currentDir };
+                throw new CommandErrorException($"Unable to delete the file: {inc[j + 2]}");
             }
         }
         // return
         return new ConsoleState() { Result = "", CurrentDir = currentDir };
     }
 
+    
     private ConsoleState DoRM(string[] inc, DirectoryInfo currentDir)
     {
         // Console.WriteLine($"!!! {new StackTrace().GetFrame(0).GetMethod().Name}");
-        var ifp = new string[inc.Length-1];
+        var ifp = new string[inc.Length - 1];
         // expand "from_files" to full path & test exist
-        for (int i=1, j=0; i < inc.Length; ++i, ++j)
+        for (int i = 1, j = 0; i < inc.Length; ++i, ++j)
         {
             ifp[j] = inc[i][0] == Path.DirectorySeparatorChar
-                ? Path.GetFullPath(Path.Combine(ConsoleEngine.RootDir.FullName, inc[i]))
+                ? Path.GetFullPath(ConsoleEngine.RootDir.FullName + inc[i])
                 : Path.GetFullPath(Path.Combine(currentDir.FullName, inc[i]));
             // Console.WriteLine($">>> {ifp[j]}");
             if (!ifp[j].StartsWith(ConsoleEngine.RootDir.FullName+Path.DirectorySeparatorChar) || !File.Exists(ifp[j]))
             {
-                return new ConsoleState() { Result = $"File not found: {inc[i]}\n", CurrentDir = currentDir };
+                throw new CommandErrorException($"File is not found: {inc[i]}");
             }
         }
         // remove files
-        for (int j=0; j < ifp.Length; ++j)
+        for (int j = 0; j < ifp.Length; ++j)
         {
             // Console.WriteLine($">>> {ifp[j]}");
             try
@@ -86,13 +87,14 @@ public class RmConsoleCommand : IConsoleCommand
             }
             catch
             {
-                return new ConsoleState() { Result = $"File delete error: {inc[j+1]}\n", CurrentDir = currentDir };
+                throw new CommandErrorException($"Unable to delete the file: {inc[j + 1]}");
             }
         }
         // return
         return new ConsoleState() { Result = "", CurrentDir = currentDir };
     }
 
+    
     public string GetHelpMessage()
     {
         // Console.WriteLine($"!!! {new StackTrace().GetFrame(0).GetMethod().Name}");
