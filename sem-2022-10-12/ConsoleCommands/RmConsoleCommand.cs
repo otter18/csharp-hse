@@ -10,22 +10,16 @@ public class RmConsoleCommand : IConsoleCommand
     public ConsoleState Process(string inpCommand, DirectoryInfo currentDir)
     {
         // Console.WriteLine($"!!! {new StackTrace().GetFrame(0).GetMethod().Name}");
+        // Console.WriteLine($"ConsoleEngine.RootDir.FullName:\n{ConsoleEngine.RootDir.FullName}");
         // split input command
         var inc = inpCommand.Split();
-        if (inc.Length < 2)
+        if (inc.Length < 2) throw new CommandErrorException("Arguments required.");
+        if (inc[1] == "-r")
         {
-            return new ConsoleState() { Result = "Wrong arguments.\n", CurrentDir = currentDir };
+            if (inc.Length == 2) throw new CommandErrorException("Arguments required.");
+            return DoRMr(inc, currentDir);
         }
-        else
-        {
-            if (inc[1] == "-r")
-            {
-                return inc.Length > 2 
-                    ? DoRMr(inc, currentDir)
-                    : new ConsoleState() { Result = "Wrong arguments.\n", CurrentDir = currentDir };
-            }
-            return DoRM(inc, currentDir);
-        }
+        return DoRM(inc, currentDir);
     }
 
     private ConsoleState DoRMr(string[] inc, DirectoryInfo currentDir)
@@ -43,7 +37,7 @@ public class RmConsoleCommand : IConsoleCommand
             {
                 return new ConsoleState() { Result = $"Can not delete root directory: {inc[i]}\n", CurrentDir = currentDir };
             }
-            if (Path.GetDirectoryName(ifp[j]) != ConsoleEngine.RootDir.FullName || !Directory.Exists(ifp[j]))
+            if (!ifp[j].StartsWith(ConsoleEngine.RootDir.FullName+Path.DirectorySeparatorChar) || !Directory.Exists(ifp[j]))
             {
                 return new ConsoleState() { Result = $"Path not found: {inc[i]}\n", CurrentDir = currentDir };
             }
@@ -77,7 +71,7 @@ public class RmConsoleCommand : IConsoleCommand
                 ? Path.GetFullPath(Path.Combine(ConsoleEngine.RootDir.FullName, inc[i]))
                 : Path.GetFullPath(Path.Combine(currentDir.FullName, inc[i]));
             // Console.WriteLine($">>> {ifp[j]}");
-            if (Path.GetDirectoryName(ifp[j]) != ConsoleEngine.RootDir.FullName || !File.Exists(ifp[j]))
+            if (!ifp[j].StartsWith(ConsoleEngine.RootDir.FullName+Path.DirectorySeparatorChar) || !File.Exists(ifp[j]))
             {
                 return new ConsoleState() { Result = $"File not found: {inc[i]}\n", CurrentDir = currentDir };
             }
@@ -103,6 +97,6 @@ public class RmConsoleCommand : IConsoleCommand
     {
         // Console.WriteLine($"!!! {new StackTrace().GetFrame(0).GetMethod().Name}");
         return "rm file1 file2 ... fileN\n" +
-               "cp -r path1 path2 ... pathN";
+               "rm -r path1 path2 ... pathN";
     }
 }
