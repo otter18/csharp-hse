@@ -26,6 +26,6 @@ public class FoxsayConsoleCommand : IConsoleCommand
 
     public string GetHelpMessage()
     {
-        return "What does the fox say?... пум пурум пум пум\nfoxsay <message>";
+        return "What does the fox say?... 🎵🎵🎵\nfoxsay <message>";
     }
 }
