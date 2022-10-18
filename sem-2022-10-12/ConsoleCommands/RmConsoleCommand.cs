@@ -19,10 +19,11 @@ public class RmConsoleCommand : IConsoleCommand
             if (inc.Length == 2) throw new CommandErrorException("Arguments required.");
             return DoRMr(inc, currentDir);
         }
+
         return DoRM(inc, currentDir);
     }
 
-    
+
     private ConsoleState DoRMr(string[] inc, DirectoryInfo currentDir)
     {
         // Console.WriteLine($"!!! {new StackTrace().GetFrame(0).GetMethod().Name}");
@@ -34,15 +35,19 @@ public class RmConsoleCommand : IConsoleCommand
                 ? Path.GetFullPath(ConsoleEngine.RootDir.FullName + inc[i])
                 : Path.GetFullPath(Path.Combine(currentDir.FullName, inc[i]));
             // Console.WriteLine($">>> {ifp[j]}");
-            if (ifp[j] == ConsoleEngine.RootDir.FullName + Path.DirectorySeparatorChar || ifp[j] == ConsoleEngine.RootDir.FullName || ifp[j] == Path.DirectorySeparatorChar.ToString())
+            if (ifp[j] == ConsoleEngine.RootDir.FullName + Path.DirectorySeparatorChar ||
+                ifp[j] == ConsoleEngine.RootDir.FullName || ifp[j] == Path.DirectorySeparatorChar.ToString())
             {
                 throw new CommandErrorException($"Unable to delete the root directory: {inc[i]}");
             }
-            if (!ifp[j].StartsWith(ConsoleEngine.RootDir.FullName+Path.DirectorySeparatorChar) || !Directory.Exists(ifp[j]))
+
+            if (!ifp[j].StartsWith(ConsoleEngine.RootDir.FullName + Path.DirectorySeparatorChar) ||
+                !Directory.Exists(ifp[j]))
             {
                 throw new CommandErrorException($"Path is not found: {inc[i]}");
             }
         }
+
         // remove files
         for (int j = 0; j < ifp.Length; ++j)
         {
@@ -56,11 +61,12 @@ public class RmConsoleCommand : IConsoleCommand
                 throw new CommandErrorException($"Unable to delete the file: {inc[j + 2]}");
             }
         }
+
         // return
         return new ConsoleState() { Result = "", CurrentDir = currentDir };
     }
 
-    
+
     private ConsoleState DoRM(string[] inc, DirectoryInfo currentDir)
     {
         // Console.WriteLine($"!!! {new StackTrace().GetFrame(0).GetMethod().Name}");
@@ -72,11 +78,13 @@ public class RmConsoleCommand : IConsoleCommand
                 ? Path.GetFullPath(ConsoleEngine.RootDir.FullName + inc[i])
                 : Path.GetFullPath(Path.Combine(currentDir.FullName, inc[i]));
             // Console.WriteLine($">>> {ifp[j]}");
-            if (!ifp[j].StartsWith(ConsoleEngine.RootDir.FullName+Path.DirectorySeparatorChar) || !File.Exists(ifp[j]))
+            if (!ifp[j].StartsWith(ConsoleEngine.RootDir.FullName + Path.DirectorySeparatorChar) ||
+                !File.Exists(ifp[j]))
             {
                 throw new CommandErrorException($"File is not found: {inc[i]}");
             }
         }
+
         // remove files
         for (int j = 0; j < ifp.Length; ++j)
         {
@@ -90,11 +98,12 @@ public class RmConsoleCommand : IConsoleCommand
                 throw new CommandErrorException($"Unable to delete the file: {inc[j + 1]}");
             }
         }
+
         // return
         return new ConsoleState() { Result = "", CurrentDir = currentDir };
     }
 
-    
+
     public string GetHelpMessage()
     {
         // Console.WriteLine($"!!! {new StackTrace().GetFrame(0).GetMethod().Name}");

@@ -14,10 +14,10 @@ public static partial class ConsoleEngine
 
     private const string AsciiArt = "  ____                  _         ____         ___  \n | __ )    __ _   ___  | |__     |___ \\       / _ \\ \n |  _ \\   / _` | / __| | '_ \\      __) |     | | | |\n | |_) | | (_| | \\__ \\ | | | |    / __/   _  | |_| |\n |____/   \\__,_| |___/ |_| |_|   |_____| (_)  \\___/ \n                                                    ";
 
-    public static DirectoryInfo RootDir { get; } = new ("sandbox");
-    private static DirectoryInfo _currentDir = new ("sandbox");
+    public static DirectoryInfo RootDir { get; } = new("sandbox");
+    private static DirectoryInfo _currentDir = new("sandbox");
 
-    private static List<string> _history = new List<string>();
+    private static List<string> _history = new();
 
     private static Dictionary<string, IConsoleCommand> _commands = new()
     {

@@ -16,7 +16,7 @@ public class LsConsoleCommand : IConsoleCommand
         return new ConsoleState
         {
             Result = (string.Join('\n', currentDir.GetDirectories().Select(x => x.Name)) + '\n' +
-                     string.Join('\n', currentDir.GetFiles().Select(x => x.Name))).Trim(),
+                      string.Join('\n', currentDir.GetFiles().Select(x => x.Name))).Trim(),
             CurrentDir = currentDir
         };
     }

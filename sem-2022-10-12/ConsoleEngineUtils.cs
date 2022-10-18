@@ -13,7 +13,8 @@ public static partial class ConsoleEngine
     {
         var args = inp.Split();
         var targetDir = args[^1].Contains(Path.DirectorySeparatorChar)
-            ? new DirectoryInfo(_currentDir.FullName + Path.DirectorySeparatorChar + args[^1][..args[^1].LastIndexOf(Path.DirectorySeparatorChar)])
+            ? new DirectoryInfo(_currentDir.FullName + Path.DirectorySeparatorChar +
+                                args[^1][..args[^1].LastIndexOf(Path.DirectorySeparatorChar)])
             : _currentDir;
 
         var res = _commands.Keys.Where(command => command.StartsWith(args[^1]));

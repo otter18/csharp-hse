@@ -19,7 +19,7 @@ public class CdConsoleCommand : IConsoleCommand
     {
         return Path.DirectorySeparatorChar + path;
     }
-    
+
     /// <summary>
     /// Reorganizing the path so it is indifferent to multiple operating systems.
     /// </summary>
@@ -41,7 +41,7 @@ public class CdConsoleCommand : IConsoleCommand
         {
             throw new CdCommnandEmptyPathException();
         }
-        
+
         return MakePathIndifferent(pathSplitted[1]);
     }
 
@@ -61,7 +61,7 @@ public class CdConsoleCommand : IConsoleCommand
         {
             return ConsoleEngine.RootDir;
         }
-        
+
         DirectoryInfo currentDirectory = new DirectoryInfo(currentPath);
         ManagePathDots(ref requestedPath, ref currentDirectory);
 
@@ -72,6 +72,7 @@ public class CdConsoleCommand : IConsoleCommand
             {
                 requestedPath = requestedPath[currentPath.Length..];
             }
+
             pathAfterDots += requestedPath;
         }
 
@@ -93,9 +94,9 @@ public class CdConsoleCommand : IConsoleCommand
         }
     }
 
-    public string GetHelpMessage() => "cd {path}" + 
+    public string GetHelpMessage() => "cd {path}" +
                                       "\n The path can be absolute or relative.";
-    
+
     public ConsoleState Process(string inpCommand, DirectoryInfo currentDir)
     {
         // Getting the path the user has given.
@@ -108,17 +109,17 @@ public class CdConsoleCommand : IConsoleCommand
         {
             throw new CommandErrorException("No path was given.", e);
         }
-        
+
         // The directory to work with while managing user's commands.
         DirectoryInfo directoryUnderChange = ManagePath(requestedPath, currentDir.FullName);
-        
+
         // Checking if the result directory is still in the root directory.
         if (ConsoleEngine.IsInRoot(directoryUnderChange) is false)
         {
             throw new CommandErrorException(
                 $"Cannot leave the root directory: {ConsoleEngine.RootDir.FullName}");
         }
-        
+
         // Checking if the result directory exists.
         if (Directory.Exists(directoryUnderChange.FullName) is false)
         {
@@ -139,7 +140,15 @@ public class CdConsoleCommand : IConsoleCommand
 /// </summary>
 public class CdCommnandEmptyPathException : ApplicationException
 {
-    public CdCommnandEmptyPathException() : base("No path was given."){}
-    public CdCommnandEmptyPathException(string message) : base(message) {}
-    public CdCommnandEmptyPathException(string message, Exception inner) : base(message, inner){}
+    public CdCommnandEmptyPathException() : base("No path was given.")
+    {
+    }
+
+    public CdCommnandEmptyPathException(string message) : base(message)
+    {
+    }
+
+    public CdCommnandEmptyPathException(string message, Exception inner) : base(message, inner)
+    {
+    }
 }
