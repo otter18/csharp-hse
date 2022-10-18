@@ -1,6 +1,6 @@
 // Solution: hse - sem-2022-10-12 - RmConsoleCommand.cs
 // Created at 2022-10-16 00:11
-// Author: 
+// Author: Aleksa Khruleva
 // Group: БПИ229
 
 namespace sem_2022_10_12.ConsoleCommands;
@@ -56,7 +56,7 @@ public class RmConsoleCommand : IConsoleCommand
             {
                 Directory.Delete(ifp[j], true);
             }
-            catch (Exception ex)
+            catch
             {
                 // Console.WriteLine($"{ex.Message}");
                 return new ConsoleState() { Result = $"File delete error: {inc[j+2]}\n", CurrentDir = currentDir };
@@ -90,7 +90,7 @@ public class RmConsoleCommand : IConsoleCommand
             {
                 File.Delete(ifp[j]);
             }
-            catch (Exception)
+            catch
             {
                 return new ConsoleState() { Result = $"File delete error: {inc[j+1]}\n", CurrentDir = currentDir };
             }

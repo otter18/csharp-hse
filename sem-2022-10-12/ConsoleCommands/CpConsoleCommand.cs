@@ -1,6 +1,6 @@
 // Solution: hse - sem-2022-10-12 - CpConsoleCommand.cs
 // Created at 2022-10-16 00:10
-// Author: 
+// Author: Aleksa Khruleva
 // Group: БПИ229
 
 namespace sem_2022_10_12.ConsoleCommands;
@@ -55,7 +55,6 @@ public class CpConsoleCommand : IConsoleCommand
         // Console.WriteLine($"!!! {new StackTrace().GetFrame(0).GetMethod().Name}");
         var ifp = "";
         var ofp = "";
-        var ds = Path.DirectorySeparatorChar;
         // test input arguments count
         if (inc.Length != 4)
         {
@@ -87,7 +86,7 @@ public class CpConsoleCommand : IConsoleCommand
         {
             DoCPrAll(ofp, dis, dit);
         }
-        catch (Exception)
+        catch
         {
             return new ConsoleState() { Result = $"Error copy to path {inc[3]}\n", CurrentDir = currentDir };
         }
@@ -140,7 +139,7 @@ public class CpConsoleCommand : IConsoleCommand
         {
             File.Copy(ifp, ofp, true);
         }
-        catch (Exception)
+        catch
         {
             return new ConsoleState() { Result = $"Error copy to file {inc[2]}\n", CurrentDir = currentDir };
         }
@@ -183,7 +182,7 @@ public class CpConsoleCommand : IConsoleCommand
                 // Console.WriteLine($"Copy to: {Path.Combine(ofp, Path.GetFileName(fp))}");
                 File.Copy(fp, Path.Combine(ofp, Path.GetFileName(fp)), true);
             }
-            catch (Exception)
+            catch
             {
                 return new ConsoleState() { Result = $"Error copy to directory {inc[i]}\n", CurrentDir = currentDir };
             }
