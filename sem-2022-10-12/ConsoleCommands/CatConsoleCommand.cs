@@ -7,16 +7,17 @@ namespace sem_2022_10_12.ConsoleCommands;
 
 public class CatConsoleCommand : IConsoleCommand
 {
-    // Static thing to remember the previous position
-    // to move between pages using arrows.
-    private bool _numerateLines = false; // initialized for clarity
-    private bool _skipLines = false;
-    private bool _printPage = false;
-    private int _pageNumber = 1;
-    private int _pageSize = 20;
+    // TODO: Static thing to remember the previous position
+    // TODO: to move between pages using arrows.
 
     public ConsoleState Process(string inpCommand, DirectoryInfo currentDir)
     {
+        var numerateLines = false;
+        var skipLines = false;
+        var printPage = false;
+        var pageNumber = 1;
+        var pageSize = 20;
+
         var lines = new List<string>();
         if (inpCommand.Length < 4)
         {
@@ -54,10 +55,10 @@ public class CatConsoleCommand : IConsoleCommand
                 switch (flag)
                 {
                     case "-n":
-                        _numerateLines = true;
+                        numerateLines = true;
                         break;
                     case "-s":
-                        _skipLines = true;
+                        skipLines = true;
                         break;
                     case "-p":
                         if (!parameterSet)
@@ -70,8 +71,8 @@ public class CatConsoleCommand : IConsoleCommand
                             throw new CommandErrorException("Inappropriate page number parameter");
                         }
 
-                        _pageNumber = value;
-                        _printPage = true;
+                        pageNumber = value;
+                        printPage = true;
                         break;
                     case "-P":
                         if (value < 1)
@@ -84,14 +85,7 @@ public class CatConsoleCommand : IConsoleCommand
                             throw new CommandErrorException("Page size parameter must be set");
                         }
 
-                        _pageSize = value;
-                        break;
-                    case "-r":
-                        _numerateLines = false;
-                        _skipLines = false;
-                        _printPage = false;
-                        _pageNumber = 1;
-                        _pageSize = 20;
+                        pageSize = value;
                         break;
                     default:
                         throw new CommandErrorException($"Unknown cat flag: {element}");
@@ -134,12 +128,6 @@ public class CatConsoleCommand : IConsoleCommand
             }
         }
 
-        // return the result if not empty
-        if (outMessage != "")
-        {
-            return new ConsoleState { Result = outMessage, CurrentDir = currentDir };
-        }
-
         // counts the number of skipped during -s lines to keep the numeration right
         var skippedLines = 0;
 
@@ -148,10 +136,10 @@ public class CatConsoleCommand : IConsoleCommand
         var high = lines.Count;
 
         // if -p used, iterate only through required lines
-        if (_printPage)
+        if (printPage)
         {
-            low = (_pageNumber - 1) * _pageSize;
-            high = Math.Min(_pageNumber * _pageSize, lines.Count);
+            low = (pageNumber - 1) * pageSize;
+            high = Math.Min(pageNumber * pageSize, lines.Count);
         }
 
         for (var i = low; i < high; ++i)
@@ -159,14 +147,14 @@ public class CatConsoleCommand : IConsoleCommand
             var line = lines[i];
 
             // implements -s flag
-            if (_skipLines && i > 0 && lines[i - 1] == "" && line == "")
+            if (skipLines && i > 0 && lines[i - 1] == "" && line == "")
             {
                 ++skippedLines;
                 continue;
             }
 
             // implements -s flag, considering -n flag and the beginning of the loop
-            if (_numerateLines)
+            if (numerateLines)
             {
                 line = $"{i - skippedLines + 1 - low}.\t {line}";
             }
@@ -181,13 +169,12 @@ public class CatConsoleCommand : IConsoleCommand
     public string GetHelpMessage()
     {
         const string message =
-            "returns the result of concatenating of one or more files\n"
+            "Returns the result of concatenating of one or more files\n"
             + "-n  numerates all lines of result \n"
             + "-s  delete duplicating empty lines\n"
             + "-P=x  set page size equal to x\n"
             + "-p=x  print page number x\n"
-            + "-r  resets all settings"
-            + "the number of output lines can be less than x when using -s\n"
+            + "Note: the number of output lines can be less than x when using -s\n"
             + "because cat first chooses the required number of lines\n"
             + "and only after that deletes unneeded lines";
         return message;
