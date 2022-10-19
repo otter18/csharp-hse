@@ -9,6 +9,13 @@ using System.Text.Json;
 
 namespace sem_2022_10_12.ConsoleCommands;
 
+public class Comparer : IComparer<(string, long)>
+{
+    public int Compare((string, long) x, (string, long) y)
+    {
+        return x.Item2.CompareTo(y.Item2);
+    }
+}
 public class LsConsoleCommand : IConsoleCommand
 {
     // TODO: Show files in current directory. Include file size and etc... Something like ls in bash with flags and stuff
@@ -20,7 +27,7 @@ public class LsConsoleCommand : IConsoleCommand
         {
             var filesInCurrentDir = GetFilesNamesFromCurrentDir(currentDir);
             var dirInCurrentDir = GetDirectoriesNamesFromCurrentDir(currentDir);
-            var resultTable = GenerResultTable(ref filesInCurrentDir, ref dirInCurrentDir, false, new List<long>());
+            var resultTable = GenerResultTable(ref filesInCurrentDir, ref dirInCurrentDir, false, new List<string>());
             return new ConsoleState
             { 
                 Result = resultTable.Trim(),
@@ -68,14 +75,14 @@ public class LsConsoleCommand : IConsoleCommand
         ref List<string> filesInCurrentDir, 
         ref List<string> dirInCurrentDir, 
         bool index, 
-        List<long> filesSize)
+        List<string> filesSize)
     {
         var resultTable="";
         var maxLengthFileName = Math.Max(filesInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
         var maxLengthDirName = Math.Max(dirInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
         var maxLengthFileIndex = Math.Max(filesInCurrentDir.Count.ToString().Length, 20)+1;
         var maxLengthDirIndex = Math.Max(dirInCurrentDir.Count.ToString().Length, 20)+1;
-        var maxLengthFileSize = filesSize.Count != 0? Math.Max(filesSize.Max().ToString().Length, 20)+1: 0;
+        var maxLengthFileSize = filesSize.Count != 0 ? Math.Max(filesSize.MaxBy(x => x.Length).Length, 20)+1: 0;
         if (index)
         {
             resultTable = new string('-', maxLengthDirIndex+maxLengthFileIndex+maxLengthDirName+maxLengthFileName+5)+"\n"
@@ -141,6 +148,39 @@ public class LsConsoleCommand : IConsoleCommand
         
         return resultTable;
     }
+
+    public string GenerResultDataTable(
+        ref List<string> filesInCurrentDir,
+        ref List<string> dirInCurrentDir,
+        ref List<string> filesCreationTime)
+    {
+        var maxLengthFileName = Math.Max(filesInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
+        var maxLengthDirName = Math.Max(dirInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
+        var maxLengthCreatTime = Math.Max(dirInCurrentDir.MaxBy(x => x.Length).Length, 20) + 1;
+        
+        var resultTable = new string('-', maxLengthDirName+maxLengthFileName+maxLengthCreatTime+4)+"\n"
+            + $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName-11))}Directories|"
+            + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName-5))}Files|"
+            + $"{string.Concat(Enumerable.Repeat(" ", maxLengthCreatTime-20))}Files' creation time|\n"
+            + new string('-', maxLengthDirName+maxLengthFileName+maxLengthCreatTime+4) + "\n";
+
+        for (int i = 0; i < Math.Max(filesInCurrentDir.Count(), dirInCurrentDir.Count()); i++)
+        {
+            var fileName = i < filesInCurrentDir.Count ? filesInCurrentDir[i] : "";
+            var dirName = i < dirInCurrentDir.Count ? dirInCurrentDir[i] : "";
+            var fileDate = (fileName == "") ? "" : (filesCreationTime[i]);
+
+
+            resultTable +=
+                $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName - dirName.Length))}{dirName}|"
+                + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName - fileName.Length))}{fileName}|" +
+                $"{string.Concat(Enumerable.Repeat(" ", maxLengthCreatTime - fileDate.Length))}{fileDate}|\n";
+        }
+
+        resultTable += new string('-', maxLengthDirName + maxLengthFileName + maxLengthCreatTime + 4);
+        return resultTable;
+    }
+    
     
     /// <summary>
     /// to generate result strings for inpCommand with flags
@@ -156,11 +196,28 @@ public class LsConsoleCommand : IConsoleCommand
         switch (flagCommand)
         {
             case "-I":
-                return GenerResultTable(ref filesInCurrentDir, ref dirInCurrentDir, true, new List<long>()).Trim();
+                return GenerResultTable(ref filesInCurrentDir, ref dirInCurrentDir, true, new List<string>()).Trim();
             
             case "-s":
-                var filesSize = currentDir.GetFiles().Select(x =>  x.Length).ToList();
+                var filesSize = currentDir.GetFiles().Select(x =>  x.Length.ToString()).ToList();
                 return GenerResultTable(ref filesInCurrentDir, ref dirInCurrentDir, false, filesSize).Trim();
+            case "-S":
+                
+                var filesNamesAndSizes = currentDir.GetFiles().Select(
+                    x => (x.Name, x.Length)).ToList();
+                filesNamesAndSizes.Sort(new Comparer());
+                var sizeSortedFiles = new List<string>();
+                var sizeSortedFilesSize = new List<string>();
+                foreach (var x in filesNamesAndSizes)
+                {
+                    sizeSortedFiles.Add(x.Name);
+                    sizeSortedFilesSize.Add(x.Length.ToString());
+                }
+                
+                return GenerResultTable(ref sizeSortedFiles, ref dirInCurrentDir, false, sizeSortedFilesSize).Trim();
+            case "-t":
+                var filesData = currentDir.GetFiles().Select(x =>  x.CreationTime.ToString()).ToList();
+                return GenerResultDataTable(ref filesInCurrentDir, ref dirInCurrentDir,ref filesData).Trim();
         }
         return "the flag does not exist";
     }
