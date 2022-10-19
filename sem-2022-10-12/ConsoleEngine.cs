@@ -19,6 +19,7 @@ public static partial class ConsoleEngine
         @" | |_) | | (_| | \__ \ | | | |    / __/   _  | |_| |" + "\n" +
         @" |____/   \__,_| |___/ |_| |_|   |_____| (_)  \___/ " + "\n" +
         @"                                                    ";
+
     public static DirectoryInfo RootDir { get; } = new("sandbox");
     private static DirectoryInfo _currentDir = new("sandbox");
 
