@@ -9,34 +9,33 @@ public class TouchConsoleCommand : IConsoleCommand
 {
     public ConsoleState Process(string inpCommand, DirectoryInfo currentDir)
     {
-        string[]? cmd = inpCommand.Split();
-        if (cmd is not null && cmd.Length >= 2)
+        var cmd = inpCommand.Split();
+        if (cmd.Length >= 2)
         {
             return MakeFile(cmd[1], currentDir);
         }
-        else
-        {
-            throw new CommandErrorException("Wrong touch command");
-        }
+
+        throw new CommandErrorException("Wrong touch command");
     }
-    
-    public ConsoleState MakeFile(string delPath, DirectoryInfo currentDir)
+
+    private static ConsoleState MakeFile(string delPath, DirectoryInfo currentDir)
     {
+        var truePath = new DirectoryInfo(
+            delPath[0] == Path.DirectorySeparatorChar
+                ? Path.Combine(ConsoleEngine.RootDir.FullName, delPath[1..])
+                : Path.Combine(currentDir.FullName, delPath)
+        );
 
-        string truePath = delPath[0] == Path.DirectorySeparatorChar
-            ? Path.GetFullPath(ConsoleEngine.RootDir.FullName + delPath)
-            : Path.GetFullPath(Path.Combine(currentDir.FullName, delPath));
-
-        if(Directory.Exists(string.Join('\\', truePath.Split('\\')[0..^1])))
+        try
         {
-            File.Create(truePath);
+            File.Create(truePath.FullName);
         }
-        else
+        catch (Exception e)
         {
-            throw new CommandErrorException("Path is not exist!");
+            throw new CommandErrorException("Path doesn't exist!", e);
         }
 
-        return new ConsoleState()
+        return new ConsoleState
         {
             Result = "",
             CurrentDir = currentDir

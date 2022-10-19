@@ -20,20 +20,21 @@ public class MkdirConsoleCommand : IConsoleCommand
         }
     }
 
-    public ConsoleState MakeDir(string delPath, DirectoryInfo currentDir)
+    private static ConsoleState MakeDir(string delPath, DirectoryInfo currentDir)
     {
+        var truePath = new DirectoryInfo(
+            delPath[0] == Path.DirectorySeparatorChar
+                ? Path.Combine(ConsoleEngine.RootDir.FullName, delPath[1..])
+                : Path.Combine(currentDir.FullName, delPath)
+        );
 
-        string truePath = delPath[0] == Path.DirectorySeparatorChar
-            ? Path.GetFullPath(ConsoleEngine.RootDir.FullName + delPath)
-            : Path.GetFullPath(Path.Combine(currentDir.FullName, delPath));
-
-        if(Directory.Exists(string.Join('\\', truePath.Split('\\')[0..^1])))
+        try
         {
-            Directory.CreateDirectory(truePath);
+            Directory.CreateDirectory(truePath.FullName);
         }
-        else
+        catch (Exception e)
         {
-            throw new CommandErrorException("Path is not exist!");
+            throw new CommandErrorException("Fatal error!", e);
         }
 
         return new ConsoleState()
