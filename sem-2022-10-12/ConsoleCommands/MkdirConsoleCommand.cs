@@ -9,15 +9,13 @@ public class MkdirConsoleCommand : IConsoleCommand
 {
     public ConsoleState Process(string inpCommand, DirectoryInfo currentDir)
     {
-        string[]? cmd = inpCommand.Split();
-        if (cmd is not null && cmd.Length >= 2)
+        var cmd = inpCommand.Split();
+        if (cmd.Length >= 2)
         {
             return MakeDir(cmd[1], currentDir);
         }
-        else
-        {
-            throw new CommandErrorException("Wrong mkdir command");
-        }
+        
+        throw new CommandErrorException("Wrong mkdir command");
     }
 
     private static ConsoleState MakeDir(string delPath, DirectoryInfo currentDir)
