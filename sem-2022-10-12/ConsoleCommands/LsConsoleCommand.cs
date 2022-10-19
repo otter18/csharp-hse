@@ -156,7 +156,7 @@ public class LsConsoleCommand : IConsoleCommand
     {
         var maxLengthFileName = Math.Max(filesInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
         var maxLengthDirName = Math.Max(dirInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
-        var maxLengthCreatTime = Math.Max(dirInCurrentDir.MaxBy(x => x.Length).Length, 30) + 1;
+        var maxLengthCreatTime = Math.Max(filesCreationTime.MaxBy(x => x.Length).Length, 30) + 1;
         
         var resultTable = new string('-', maxLengthDirName+maxLengthFileName+maxLengthCreatTime+4)+"\n"
             + $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName-11))}Directories|"
