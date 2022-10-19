@@ -1,6 +1,6 @@
 // Solution: hse - sem-2022-10-12 - TouchConsoleCommand.cs
 // Created at 2022-10-15 23:57
-// Author: $YOUR NAME$
+// Author: Рудинский Матвей 
 // Group: БПИ229
 
 namespace sem_2022_10_12.ConsoleCommands;
