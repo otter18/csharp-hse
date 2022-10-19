@@ -220,7 +220,15 @@ public static partial class ConsoleEngine
         Init();
         while (!_exit)
         {
-            Loop();
+            try
+            {
+                Loop();
+            }
+            catch (Exception e)
+            {
+                WriteLine(e.ToString(), consoleColor: ConsoleColor.Red);
+                _exit = true;
+            }
         }
     }
 }
