@@ -22,6 +22,7 @@ public class CatConsoleCommand : IConsoleCommand
         {
             throw new CommandErrorException("Invalid syntax");
         }
+
         var flagsAndFiles = inpCommand[4..];
         var outMessage = "";
 
@@ -84,6 +85,13 @@ public class CatConsoleCommand : IConsoleCommand
                         }
 
                         _pageSize = value;
+                        break;
+                    case "-r":
+                        _numerateLines = false;
+                        _skipLines = false;
+                        _printPage = false;
+                        _pageNumber = 1;
+                        _pageSize = 20;
                         break;
                     default:
                         throw new CommandErrorException($"Unknown cat flag: {element}");
@@ -176,8 +184,9 @@ public class CatConsoleCommand : IConsoleCommand
             "returns the result of concatenating of one or more files\n"
             + "-n  numerates all lines of result \n"
             + "-s  delete duplicating empty lines\n"
-            + "-P=x  set page size equal to x"
+            + "-P=x  set page size equal to x\n"
             + "-p=x  print page number x\n"
+            + "-r  resets all settings"
             + "the number of output lines can be less than x when using -s\n"
             + "because cat first chooses the required number of lines\n"
             + "and only after that deletes unneeded lines";
