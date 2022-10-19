@@ -28,7 +28,7 @@ public class TouchConsoleCommand : IConsoleCommand
 
         try
         {
-            File.Create(truePath.FullName);
+            using var fileStream = File.Create(truePath.FullName);
         }
         catch (Exception e)
         {
