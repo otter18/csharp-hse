@@ -130,8 +130,8 @@ public static partial class ConsoleEngine
 
     private static DirectoryInfo GetFullPath(string path)
     {
-        return path.StartsWith('/')
-            ? new DirectoryInfo(Path.Combine(RootDir.FullName, path))
+        return path.StartsWith(Path.DirectorySeparatorChar)
+            ? new DirectoryInfo(Path.Combine(RootDir.FullName, path[1..]))
             : new DirectoryInfo(Path.Combine(_currentDir.FullName, path));
     }
 
