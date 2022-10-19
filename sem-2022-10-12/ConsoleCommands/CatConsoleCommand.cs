@@ -18,6 +18,10 @@ public class CatConsoleCommand : IConsoleCommand
     public ConsoleState Process(string inpCommand, DirectoryInfo currentDir)
     {
         var lines = new List<string>();
+        if (inpCommand.Length < 4)
+        {
+            throw new CommandErrorException("Invalid syntax");
+        }
         var flagsAndFiles = inpCommand[4..];
         var outMessage = "";
 
