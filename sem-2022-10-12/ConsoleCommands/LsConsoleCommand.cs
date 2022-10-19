@@ -19,49 +19,85 @@ public class LsConsoleCommand : IConsoleCommand
 
         if (flagCommand.Length == 1)
         {
-            var filesInCurrentDir = GetFilesFromCurrentDir(currentDir);
-            var dirInCurrentDir = GetDirectoriesFromCurrentDir(currentDir);
-            var resultTable = GenerResultTable(ref filesInCurrentDir, ref dirInCurrentDir);
+            var filesInCurrentDir = GetFilesNamesFromCurrentDir(currentDir);
+            var dirInCurrentDir = GetDirectoriesNamesFromCurrentDir(currentDir);
+            var resultTable = GenerResultTable(ref filesInCurrentDir, ref dirInCurrentDir, false);
             return new ConsoleState
             { 
                 Result = resultTable.Trim(),
                 CurrentDir = currentDir
             };
         }
-        /*switch (flag[1])
-        {
-            case ;
-        }
-        */
+        return new ConsoleState
+        { 
+            Result = GenerResultForFlags(flagCommand[1], currentDir).Trim(),
+            CurrentDir = currentDir
+        };
+        
+
+
         return new ConsoleState();
     }
 
-    public List<string> GetFilesFromCurrentDir(DirectoryInfo currentDir)
+    public List<string> GetFilesNamesFromCurrentDir(DirectoryInfo currentDir)
     {
         return currentDir.GetFiles().Select(x => x.Name).ToList();
     }
     
-    public List<string> GetDirectoriesFromCurrentDir(DirectoryInfo currentDir)
+    public List<string> GetDirectoriesNamesFromCurrentDir(DirectoryInfo currentDir)
     {
         return currentDir.GetDirectories().Select(x => x.Name).ToList();
     }
 
-    public string GenerResultTable(ref List<string> filesInCurrentDir, ref List<string> dirInCurrentDir)
+    public string GenerResultTable(ref List<string> filesInCurrentDir, ref List<string> dirInCurrentDir, bool index)
     {
-        var resultTable = new string('-', 45)
+        var resultTable="";
+        if (index)
+        {
+            resultTable = new string('-', 86)
+                              + "\n" + string.Format("|{0,20}|{1,20}|{2, 20}|{3, 20}|", "DirIndex", "Directories", "FileIndex", "Files")
+                              + "\n" + new string('-', 86) + "\n";
+        }
+        else{
+            resultTable = new string('-', 43)
                           + "\n" + string.Format("|{0,20}|{1,20}|", "Directories", "Files")
-                          + "\n" + new string('-', 45) +"\n";
+                          + "\n" + new string('-', 43) +"\n";
+        }
         
         for (int i = 0; i < Math.Max(filesInCurrentDir.Count(), dirInCurrentDir.Count()); i++)
         {
             var fileName = i < filesInCurrentDir.Count ? filesInCurrentDir[i] : "";
             var dirName = i < dirInCurrentDir.Count ? dirInCurrentDir[i] : "";
-            resultTable += string.Format("|{0, 20}|{1,20}|", dirName, fileName) + "\n";
+            var fileIndex = fileName == "" ? "" : (i+1).ToString(); 
+            var dirIndex = dirName == "" ? "" : (i+1).ToString();
+            if (index)
+            {
+                resultTable += string.Format("|{0,20}|{1,20}|{2, 20}|{3, 20}|", 
+                    dirIndex, dirName, fileIndex, fileName) + "\n";
+            }
+            else
+            {
+                resultTable += string.Format("|{0, 20}|{1,20}|", dirName, fileName) + "\n";
+            }
         }
 
-        resultTable += new string('-', 45);
+        resultTable += new string('-', index ? 86: 43);
         
         return resultTable;
+    }
+
+    public string GenerResultForFlags(string flagCommand, DirectoryInfo currentDir)
+    {
+        switch (flagCommand)
+        {
+            case "-I":
+                var filesInCurrentDir = GetFilesNamesFromCurrentDir(currentDir);
+                var dirInCurrentDir = GetDirectoriesNamesFromCurrentDir(currentDir);
+                return GenerResultTable(ref filesInCurrentDir, ref dirInCurrentDir, true).Trim();
+     
+        }
+
+        return "";
     }
 
     public string GetHelpMessage()
