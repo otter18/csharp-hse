@@ -12,7 +12,13 @@ public static partial class ConsoleEngine
 {
     private static bool _exit;
 
-    private const string AsciiArt = "  ____                  _         ____         ___  \n | __ )    __ _   ___  | |__     |___ \\       / _ \\ \n |  _ \\   / _` | / __| | '_ \\      __) |     | | | |\n | |_) | | (_| | \\__ \\ | | | |    / __/   _  | |_| |\n |____/   \\__,_| |___/ |_| |_|   |_____| (_)  \\___/ \n                                                    ";
+    private const string AsciiArt =
+        @"  ____                  _         ____         ___  " + "\n" +
+        @" | __ )    __ _   ___  | |__     |___ \       / _ \ " + "\n" +
+        @" |  _ \   / _` | / __| | '_ \      __) |     | | | |" + "\n" +
+        @" | |_) | | (_| | \__ \ | | | |    / __/   _  | |_| |" + "\n" +
+        @" |____/   \__,_| |___/ |_| |_|   |_____| (_)  \___/ " + "\n" +
+        @"                                                    ";
 
     public static DirectoryInfo RootDir { get; } = new("sandbox");
     private static DirectoryInfo _currentDir = new("sandbox");
