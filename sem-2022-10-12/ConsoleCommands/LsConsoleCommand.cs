@@ -60,16 +60,20 @@ public class LsConsoleCommand : IConsoleCommand
         }
 
         resultTable += new string('-', 45);
+        
         return resultTable;
     }
 
     public string GetHelpMessage()
     {
-        var mess = "I'll write this part tomorrow \n and now I want to present you a rabbit \n" +
-                    "(\\__/)\n"+
-                    "(='.'=)\n"+
-                    "(\")_(\")";
-           
+        var mess = "ls [--flags]\n"
+                   + "Outputs a list of folders and files in currentDir\n\n"
+                   + "-I list file's inode index number\n"
+                   + "-s list file size\n"
+                   + "-t sort by time & data\n"
+                   + "-S sort by file size\n"
+                   + "-d list directories - with '*/'";
+            
         return mess;
     }
 }
