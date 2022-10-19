@@ -71,26 +71,36 @@ public class LsConsoleCommand : IConsoleCommand
         List<long> filesSize)
     {
         var resultTable="";
-        
+        var maxLengthFileName = Math.Max(filesInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
+        var maxLengthDirName = Math.Max(dirInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
+        var maxLengthFileIndex = Math.Max(filesInCurrentDir.Count.ToString().Length, 20)+1;
+        var maxLengthDirIndex = Math.Max(dirInCurrentDir.Count.ToString().Length, 20)+1;
+        var maxLengthFileSize = filesSize.Count != 0? Math.Max(filesSize.Max().ToString().Length, 20)+1: 0;
         if (index)
         {
-            resultTable = new string('-', 86)
-                              + "\n" + string.Format("|{0,20}|{1,20}|{2, 20}|{3, 20}|", "DirIndex", "Directories", "FileIndex", "Files")
-                              + "\n" + new string('-', 86) + "\n";
+            resultTable = new string('-', maxLengthDirIndex+maxLengthFileIndex+maxLengthDirName+maxLengthFileName+5)+"\n"
+                          + $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirIndex-8))}DirIndex|"
+                          + $"{string.Concat(Enumerable.Repeat(" ", maxLengthDirName-11))}Directories|"
+                          + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileIndex-9))}FileIndex|"
+                          + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName-5))}Files|\n"
+                          + new string('-', maxLengthDirIndex+maxLengthFileIndex+maxLengthDirName+maxLengthFileName+5) + "\n";
         }
         
         else if (filesSize.Count != 0)
         {
-            resultTable = new string('-', 74)
-                          + "\n" + string.Format("|{0,20}|{1,20}|{2, 30}|", "Directories", "Files", "FilesSize (bytes)")
-                          + "\n" + new string('-', 74) + "\n"; 
+            resultTable = new string('-', maxLengthFileIndex + maxLengthFileName + maxLengthFileSize + 4) + "\n"
+                + $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName - 11))}Directories|"
+                + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName-5))}Files|"
+                + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileSize- 17))}FilesSize (bytes)|\n"
+            + new string('-', maxLengthFileSize+maxLengthDirName+maxLengthFileName+4) + "\n";
         }
         
         else
         {
-            resultTable = new string('-', 43)
-                          + "\n" + string.Format("|{0,20}|{1,20}|", "Directories", "Files")
-                          + "\n" + new string('-', 43) +"\n";
+            resultTable = new string('-', maxLengthDirName+maxLengthFileName+3)+"\n"
+                + $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName-11))}Directories|"
+                + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName-5))}Files|\n"
+                + new string('-', maxLengthDirName+maxLengthFileName+3) + "\n";
         }
         
         for (int i = 0; i < Math.Max(filesInCurrentDir.Count(), dirInCurrentDir.Count()); i++)
@@ -103,24 +113,31 @@ public class LsConsoleCommand : IConsoleCommand
             
             if (index)
             {
-                resultTable += string.Format("|{0,20}|{1,20}|{2, 20}|{3, 20}|", 
-                    dirIndex, dirName, fileIndex, fileName) + "\n";
+                resultTable += $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirIndex - dirIndex.Length))}{dirIndex}|"
+                               + $"{string.Concat(Enumerable.Repeat(" ", maxLengthDirName - dirName.Length))}{dirName}|"
+                               + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileIndex - fileIndex.Length))}{fileIndex}|"
+                               + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName - fileName.Length))}{fileName}|\n";
+
             }
             
             else if (filesSize.Count != 0)
             {
-                resultTable += fileSize == "" ? 
-                    string.Format("|{0,20}|{1,20}|  {2, 28}|", dirName,  fileName, fileSize) + "\n" :
-                    string.Format("|{0,20}|{1,20} =>{2, 28}|", dirName,  fileName, fileSize) + "\n";
+                resultTable += $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName - dirName.Length))}{dirName}|"
+                    + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName-fileName.Length))}{fileName}|"
+                    + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileSize- fileSize.Length))}{fileSize}|\n";
             }
             
             else
             {
-                resultTable += string.Format("|{0, 20}|{1,20}|", dirName, fileName) + "\n";
+                resultTable += $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName-dirName.Length))}{dirName}|"
+                              + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName-fileName.Length))}{fileName}|\n";
             }
         }
 
-        resultTable += new string('-', index ? 86: filesSize.Count != 0 ? 74 :43);
+        resultTable += new string('-', maxLengthFileName+maxLengthDirName + 
+                                       (index ?  maxLengthDirIndex + maxLengthFileIndex+5 
+                                           : filesSize.Count != 0 
+                                               ? maxLengthFileSize+4:3));
         
         return resultTable;
     }
