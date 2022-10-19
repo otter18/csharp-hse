@@ -1,6 +1,6 @@
 // Solution: hse - sem-2022-10-12 - LsConsoleCommand.cs
 // Created at 2022-10-15 22:25
-// Author: 
+// Author: Самилык Анастасия
 // Group: БПИ229
 
 using System.Diagnostics;
@@ -11,7 +11,7 @@ namespace sem_2022_10_12.ConsoleCommands;
 
 public class LsConsoleCommand : IConsoleCommand
 {
-
+    // TODO: Show files in current directory. Include file size and etc... Something like ls in bash with flags and stuff
     public ConsoleState Process(string inpCommand, DirectoryInfo currentDir)
     {
         var flagCommand = inpCommand.Split();
@@ -33,7 +33,7 @@ public class LsConsoleCommand : IConsoleCommand
             Result = GenerResultForFlags(flagCommand[1], currentDir).Trim(),
             CurrentDir = currentDir
         };
-         return new ConsoleState();
+
     }
     
     /// <summary>
@@ -145,7 +145,7 @@ public class LsConsoleCommand : IConsoleCommand
                 var filesSize = currentDir.GetFiles().Select(x =>  x.Length).ToList();
                 return GenerResultTable(ref filesInCurrentDir, ref dirInCurrentDir, false, filesSize).Trim();
         }
-        return "";
+        return "the flag does not exist";
     }
 
     public string GetHelpMessage()
