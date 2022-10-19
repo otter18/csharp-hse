@@ -78,8 +78,8 @@ public class LsConsoleCommand : IConsoleCommand
         List<string> filesSize)
     {
         var resultTable="";
-        var maxLengthFileName = Math.Max(filesInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
-        var maxLengthDirName = Math.Max(dirInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
+        var maxLengthFileName = filesInCurrentDir.Count == 0? 20: Math.Max(filesInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
+        var maxLengthDirName = dirInCurrentDir.Count == 0? 20: Math.Max(dirInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
         var maxLengthFileIndex = Math.Max(filesInCurrentDir.Count.ToString().Length, 20)+1;
         var maxLengthDirIndex = Math.Max(dirInCurrentDir.Count.ToString().Length, 20)+1;
         var maxLengthFileSize = filesSize.Count != 0 ? Math.Max(filesSize.MaxBy(x => x.Length).Length, 20)+1: 0;
@@ -154,9 +154,9 @@ public class LsConsoleCommand : IConsoleCommand
         ref List<string> dirInCurrentDir,
         ref List<string> filesCreationTime)
     {
-        var maxLengthFileName = Math.Max(filesInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
-        var maxLengthDirName = Math.Max(dirInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
-        var maxLengthCreatTime = Math.Max(filesCreationTime.MaxBy(x => x.Length).Length, 30) + 1;
+        var maxLengthFileName = filesInCurrentDir.Count == 0? 20: Math.Max(filesInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
+        var maxLengthDirName = dirInCurrentDir.Count == 0? 20: Math.Max(dirInCurrentDir.MaxBy(x => x.Length).Length, 20)+1;
+        var maxLengthCreatTime = filesCreationTime.Count == 0 ? 30:Math.Max(filesCreationTime.MaxBy(x => x.Length).Length, 30) + 1;
         
         var resultTable = new string('-', maxLengthDirName+maxLengthFileName+maxLengthCreatTime+4)+"\n"
             + $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName-11))}Directories||"
