@@ -87,7 +87,7 @@ public class LsConsoleCommand : IConsoleCommand
         {
             resultTable = new string('-', maxLengthDirIndex+maxLengthFileIndex+maxLengthDirName+maxLengthFileName+5)+"\n"
                           + $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirIndex-8))}DirIndex|"
-                          + $"{string.Concat(Enumerable.Repeat(" ", maxLengthDirName-11))}Directories|"
+                          + $"{string.Concat(Enumerable.Repeat(" ", maxLengthDirName-11))}Directories||"
                           + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileIndex-9))}FileIndex|"
                           + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName-5))}Files|\n"
                           + new string('-', maxLengthDirIndex+maxLengthFileIndex+maxLengthDirName+maxLengthFileName+5) + "\n";
@@ -96,7 +96,7 @@ public class LsConsoleCommand : IConsoleCommand
         else if (filesSize.Count != 0)
         {
             resultTable = new string('-', maxLengthFileIndex + maxLengthFileName + maxLengthFileSize + 4) + "\n"
-                + $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName - 11))}Directories|"
+                + $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName - 11))}Directories||"
                 + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName-5))}Files|"
                 + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileSize- 17))}FilesSize (bytes)|\n"
             + new string('-', maxLengthFileSize+maxLengthDirName+maxLengthFileName+4) + "\n";
@@ -105,7 +105,7 @@ public class LsConsoleCommand : IConsoleCommand
         else
         {
             resultTable = new string('-', maxLengthDirName+maxLengthFileName+3)+"\n"
-                + $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName-11))}Directories|"
+                + $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName-11))}Directories||"
                 + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName-5))}Files|\n"
                 + new string('-', maxLengthDirName+maxLengthFileName+3) + "\n";
         }
@@ -121,7 +121,7 @@ public class LsConsoleCommand : IConsoleCommand
             if (index)
             {
                 resultTable += $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirIndex - dirIndex.Length))}{dirIndex}|"
-                               + $"{string.Concat(Enumerable.Repeat(" ", maxLengthDirName - dirName.Length))}{dirName}|"
+                               + $"{string.Concat(Enumerable.Repeat(" ", maxLengthDirName - dirName.Length))}{dirName}||"
                                + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileIndex - fileIndex.Length))}{fileIndex}|"
                                + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName - fileName.Length))}{fileName}|\n";
 
@@ -129,14 +129,14 @@ public class LsConsoleCommand : IConsoleCommand
             
             else if (filesSize.Count != 0)
             {
-                resultTable += $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName - dirName.Length))}{dirName}|"
+                resultTable += $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName - dirName.Length))}{dirName}||"
                     + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName-fileName.Length))}{fileName}|"
                     + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileSize- fileSize.Length))}{fileSize}|\n";
             }
             
             else
             {
-                resultTable += $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName-dirName.Length))}{dirName}|"
+                resultTable += $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName-dirName.Length))}{dirName}||"
                               + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName-fileName.Length))}{fileName}|\n";
             }
         }
@@ -159,7 +159,7 @@ public class LsConsoleCommand : IConsoleCommand
         var maxLengthCreatTime = Math.Max(filesCreationTime.MaxBy(x => x.Length).Length, 30) + 1;
         
         var resultTable = new string('-', maxLengthDirName+maxLengthFileName+maxLengthCreatTime+4)+"\n"
-            + $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName-11))}Directories|"
+            + $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName-11))}Directories||"
             + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName-5))}Files|"
             + $"{string.Concat(Enumerable.Repeat(" ", maxLengthCreatTime-20))}Files' creation time|\n"
             + new string('-', maxLengthDirName+maxLengthFileName+maxLengthCreatTime+4) + "\n";
@@ -172,7 +172,7 @@ public class LsConsoleCommand : IConsoleCommand
 
 
             resultTable +=
-                $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName - dirName.Length))}{dirName}|"
+                $"|{string.Concat(Enumerable.Repeat(" ", maxLengthDirName - dirName.Length))}{dirName}||"
                 + $"{string.Concat(Enumerable.Repeat(" ", maxLengthFileName - fileName.Length))}{fileName}|" +
                 $"{string.Concat(Enumerable.Repeat(" ", maxLengthCreatTime - fileDate.Length))}{fileDate}|\n";
         }
@@ -229,9 +229,8 @@ public class LsConsoleCommand : IConsoleCommand
                    + "Flags:\n"
                    + "-I list file's inode index number\n"
                    + "-s list file size\n"
-                   + "-t sort by time & data\n"
-                   + "-S sort by file size\n"
-                   + "-d list directories - with '*/'\n";
+                   + "-t list creation time & data\n"
+                   + "-S sort by file size\n";
             
         return mess;
     }
