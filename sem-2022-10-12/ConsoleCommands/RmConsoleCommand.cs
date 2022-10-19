@@ -62,7 +62,13 @@ public class RmConsoleCommand : IConsoleCommand
             }
         }
 
+        while (!currentDir.Exists && ConsoleEngine.IsInRoot(currentDir))
+        {
+            currentDir = currentDir.Parent!;
+        }
+
         // return
+
         return new ConsoleState() { Result = "", CurrentDir = currentDir };
     }
 
