@@ -9,13 +9,13 @@ namespace sem_2022_11_09;
 
 public static class Utils
 {
-    private static Regex urlPat = new (@"href=""(.+?)""");
+    private static Regex urlPat = new (@"<a.*href=""(?<url>.+?)"".*>(?<name>.*?)</a>");
     private static Regex bodyPat = new (@"<body.*?>((.|\n|\t)*)</body>");
     private static Random rnd = new ();
 
     public static IResult GenRandomName(string s, int n, int len)
     {
-        if (s.Length == 0 && s.ToHashSet().Count == s.Length)
+        if (s.Length == 0 || s.ToCharArray().Distinct().Count() != s.Length)
         {
             return Results.BadRequest("s should be non empty string of unique chars");
         }
@@ -49,10 +49,10 @@ public static class Utils
             var resp = await client.GetStringAsync(url);
             resp = bodyPat.Match(resp).Groups[1].Value;
 
-            var res = new List<string>();
+            var res = new List<Tuple<string, string>>();
             foreach (Match match in urlPat.Matches(resp))
             {
-                res.Add(match.Groups[1].Value);
+                res.Add(new Tuple<string, string>(match.Groups["name"].Value, match.Groups["url"].Value));
             }
 
             return Results.Ok(res);
