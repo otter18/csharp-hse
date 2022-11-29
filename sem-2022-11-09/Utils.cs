@@ -4,14 +4,16 @@
 // Group: БПИ229
 
 using System.Text.RegularExpressions;
+using System.Web;
+using Microsoft.AspNetCore.Authorization;
 
 namespace sem_2022_11_09;
 
 public static class Utils
 {
-    private static Regex urlPat = new (@"<a.*href=""(?<url>.+?)"".*>(?<name>.*?)</a>");
-    private static Regex bodyPat = new (@"<body.*?>((.|\n|\t)*)</body>");
-    private static Random rnd = new ();
+    private static Regex urlPat = new(@"<a.*href=""(?<url>.+?)"".*>(?<name>.*?)</a>");
+    private static Regex bodyPat = new(@"<body.*?>((.|\n|\t)*)</body>");
+    private static Random rnd = new();
 
     public static IResult GenRandomName(string s, int n, int len)
     {
@@ -49,10 +51,19 @@ public static class Utils
             var resp = await client.GetStringAsync(url);
             resp = bodyPat.Match(resp).Groups[1].Value;
 
-            var res = new List<Tuple<string, string>>();
+            var res = new List<object>();
             foreach (Match match in urlPat.Matches(resp))
             {
-                res.Add(new Tuple<string, string>(match.Groups["name"].Value, match.Groups["url"].Value));
+                var tmp = HttpUtility.UrlDecode(match.Groups["url"].Value);
+                if (tmp.StartsWith("/wiki/"))
+                {
+                    res.Add(new
+                    {
+                        Name = match.Groups["name"].Value,
+                        Url = url[..(url[^1] == '/' ? ^1 : url.Length)] + match.Groups["url"].Value,
+                        CleanUrl = tmp
+                    });
+                }
             }
 
             return Results.Ok(res);
